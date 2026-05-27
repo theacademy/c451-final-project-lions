@@ -1,7 +1,8 @@
 package org.example.controller;
 
-import org.server.model.Job;
-import org.server.service.JobServiceImpl;
+import org.example.model.Job;
+import org.example.service.JobServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
 @CrossOrigin
 public class JobController {
 
-   // @Autowired
+    @Autowired
     JobServiceImpl jobService;
 
     @GetMapping("/Jobs")
@@ -32,8 +33,8 @@ public class JobController {
         //YOUR CODE ENDS HERE
     }
 
-    @DeleteMapping("/{id}")
-    public void refrefJob(@PathVariable int id) {
+    @DeleteMapping("/refresh")
+    public void refreshJob(@PathVariable int id) {
         //YOUR CODE STARTS HERE
 
 

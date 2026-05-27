@@ -1,6 +1,6 @@
 package org.example.dao;
 
-import org.server.model.Job;
+import org.example.model.Job;
 
 import java.util.List;
 
