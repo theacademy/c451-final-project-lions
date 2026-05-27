@@ -4,7 +4,10 @@ import org.example.model.Job;
 import org.example.model.User;
 import org.example.service.JobServiceImpl;
 import org.example.service.UserServiceImpl;
+import org.example.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,7 +19,10 @@ public class UserController {
     @Autowired
     UserServiceImpl userService;
 
-    @GetMapping("/Job")
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @GetMapping("/user")
     public List<User> getUserByName (@RequestBody String name){
         return null;
     }
@@ -35,6 +41,11 @@ public class UserController {
         //YOUR CODE ENDS HERE
     }
 
+    @PostMapping("/login")
+    public String login(@RequestBody User user){
+        return "";
+    }
+
     @PutMapping("/update/{id}")
     public User updateUser(@PathVariable int id, @RequestBody User user) {
         //YOUR CODE STARTS HERE
@@ -45,10 +56,37 @@ public class UserController {
     }
 
     @PutMapping("/updatePass/{id}")
-    public User updatePass(@PathVariable int id, @RequestBody String password) {
+    public ResponseEntity updatePass(@PathVariable int id, @RequestBody String password,String user,
+                           @RequestHeader("Authorization") String authHeader
+    ) {
         //YOUR CODE STARTS HERE
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Missing or invalid token");
+        }
 
-        return null;
+
+        // Extract JWT token
+        String token = authHeader.substring(7);
+
+        try {
+
+            // Extract username from token
+            String username = jwtUtil.extractUsername(token);
+
+            // Optional: ensure user can only change their own password
+            if (!user.equals(username)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("Access denied");
+            }
+
+            return ResponseEntity.ok("Success");
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid token");
+        }
 
         //YOUR CODE ENDS HERE
     }

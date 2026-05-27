@@ -25,4 +25,7 @@ public interface UserServiceInterface {
 
     void deleteUser(int id);
 
+    public User findUserByUsername(String name);
+
+    public String login(User user);
 }
