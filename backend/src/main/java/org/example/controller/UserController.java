@@ -116,8 +116,8 @@ public class UserController {
         //YOUR CODE ENDS HERE
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteUserJob(@PathVariable Job job) {
+    @DeleteMapping("/{id}/job")
+    public void deleteUserJob(@PathVariable int id, @RequestBody Job job) {
         //YOUR CODE STARTS HERE
 
 
