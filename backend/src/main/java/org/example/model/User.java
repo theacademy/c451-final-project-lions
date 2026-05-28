@@ -12,11 +12,12 @@ public class User {
     }
 
     public String getName() {
-        return Name;
+        return first_name+" "+ last_name;
     }
 
-    public void setName(String name) {
-        Name = name;
+    public void setName(String fName) {
+        this.first_name=fName;
+       // this.last_name=lName;
     }
 
     public List<String> getSkills() {
@@ -44,8 +45,11 @@ public class User {
     }
 
     int id;
-    String Name;
+    String first_name;
+    String last_name;
+    String email_address;
     List<String> skills;
     String password;
     List<Job> jods;
 }
+
