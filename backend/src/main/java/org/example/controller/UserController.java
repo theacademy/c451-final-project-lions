@@ -33,17 +33,17 @@ public class UserController {
     }
 
     @PostMapping("/add")
+    // Method to add/create a new user
+    // Send the user object to the service layer to create/save the user
     public User addUser(@RequestBody User user) {
-        //YOUR CODE STARTS HERE
-
-        return null;
-
-        //YOUR CODE ENDS HERE
+        return userService.createNewUser(user);
     }
 
     @PostMapping("/login")
+    // Method used to log a user in
+    // Send the user's login details to the service layer
     public String login(@RequestBody User user){
-        return "";
+        return userService.login(user);
     }
 
     @PutMapping("/update/{id}")

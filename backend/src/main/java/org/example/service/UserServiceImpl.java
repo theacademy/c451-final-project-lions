@@ -4,26 +4,45 @@ import org.example.model.Job;
 import org.example.model.User;
 import org.example.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.regex.Pattern;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
+@Service
 public class UserServiceImpl implements UserServiceInterface {
 
     @Autowired
     private JwtUtil jwtUtil;
+    // Stores users using username as the key
+    private final Map<String, User> usersByName = new ConcurrentHashMap<>();
+    // Generates unique IDs for each new user
+    private final AtomicInteger idGenerator = new AtomicInteger(1);
 
     @Override
-    public User createNewUser(User user) {
-        if (findUserByUsername(user.getName())!= null){
-            user.setName("Username already in use");
-            return user;
+    public User createNewUser(User user) { // Creates a new user and saves them
+        // Check if user data is missing (invalid request)
+        if (user == null || user.getName() == null || user.getPassword() == null) {
+            return null;
         }
+        // Check if a user with this username already exists
+        if (findUserByUsername(user.getName()) != null) {
+            return null;
+        }
+        User newUser = new User();  // Create a new User object
+        newUser.setId(idGenerator.getAndIncrement()); // Assign a unique ID to the user
+        // Set username and password
+        newUser.setName(user.getName());
+        newUser.setPassword(user.getPassword());
+        // Set skills (empty list if none provided)
+        newUser.setSkills(user.getSkills() == null ? new ArrayList<>() : user.getSkills());
+        // Save user in the map (username -> user)
+        usersByName.put(newUser.getName(), newUser);
 
-        return null;
+        return newUser;
     }
 
 
@@ -70,8 +89,9 @@ public class UserServiceImpl implements UserServiceInterface {
     }
 
     @Override
+    // Finds and returns a user by their username
     public User findUserByUsername(String name) {
-        return null;
+        return usersByName.get(name);
     }
 
     @Override
@@ -86,38 +106,4 @@ public class UserServiceImpl implements UserServiceInterface {
         }
         return "Error";
     }
-
-    private boolean validatePassword(String password){
-        String passwordReqex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
-        Pattern passwordPattern = Pattern.compile(passwordReqex);
-
-        if (!passwordPattern.matcher(password).matches()) {
-
-            return false;
-        }
-        return true;
-    }
-    //temp
-    private int skillMatch(String parg){//temp
-        String jobDesc = "We are looking for Java, Spring Boot and SQL experience";
-
-        List<String> skills = Arrays.asList(
-                "java",
-                "spring boot",
-                "sql",
-                "python"
-        );
-
-        String normalized = jobDesc.toLowerCase();
-
-        Set<String> matched = new HashSet<>();
-
-        for (String skill : skills) {
-            if (normalized.contains(skill.toLowerCase())) {
-                matched.add(skill);
-            }
-        }
-
-       return matched.size();
-    }//temp
 }
