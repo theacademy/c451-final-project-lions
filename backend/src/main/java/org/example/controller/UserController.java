@@ -65,7 +65,6 @@ public class UserController {
                     .body("Missing or invalid token");
         }
 
-
         // Extract JWT token
         String token = authHeader.substring(7);
 
