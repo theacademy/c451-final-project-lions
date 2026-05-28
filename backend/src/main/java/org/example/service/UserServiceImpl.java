@@ -4,6 +4,7 @@ import org.example.model.Job;
 import org.example.model.User;
 import org.example.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+@Service
 public class UserServiceImpl implements UserServiceInterface {
 
     @Autowired

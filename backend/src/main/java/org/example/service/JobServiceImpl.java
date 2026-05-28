@@ -1,9 +1,11 @@
 package org.example.service;
 
 import org.example.model.Job;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class JobServiceImpl implements  JobServiceInterface{
 
 
