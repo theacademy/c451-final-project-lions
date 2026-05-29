@@ -23,40 +23,79 @@ public class UserController {
     private JwtUtil jwtUtil;
 
     @GetMapping("/user")
-    public User getUserByName (@RequestBody String name){
+    public ResponseEntity<?> getUserByName (@RequestBody String name){
         User user = userService.findUserByUsername(name);
-        return user;
+        if (user == null ) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                    .body("No content");
+        }
+        return ResponseEntity.ok(user);
+
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable int id){
+    public ResponseEntity<?> getUserById(@PathVariable int id){
         User user = userService.findUserById(id);
-
-        return user;
+        if (user == null ) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                    .body("No content");
+        }
+        return ResponseEntity.ok(user);
     }
 
     @PostMapping("/add")
     // Method to add/create a new user
     // Send the user object to the service layer to create/save the user
-    public User addUser(@RequestBody User user) {
-        return userService.createNewUser(user);
+    public ResponseEntity<?> addUser(@RequestBody User user) {
+        User newuser = userService.createNewUser(user);
+        if (newuser == null ) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                    .body("Add failed");
+        }
+        return ResponseEntity.ok(newuser);
     }
 
     @PostMapping("/login")
     // Method used to log a user in
     // Send the user's login details to the service layer
-    public String login(@RequestBody User user){
-        return userService.login(user);
+    public ResponseEntity<String> login(@RequestBody User user){
+        String jwt = userService.login(user);
+        if (jwt.equals("Error") ) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                    .body("Add failed");
+        }
+        return ResponseEntity.ok(jwt);
     }
 
     @PutMapping("/update/{id}")
-    public User updateUser(@PathVariable int id, @RequestBody User user) {
+    public ResponseEntity<?> updateUser(@PathVariable int id, @RequestBody User user,
+        @RequestHeader("Authorization") String authHeader) {
         //YOUR CODE STARTS HERE
-        userService.editUser(user);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Missing or invalid token");
+        }
+        String token = authHeader.substring(7);
 
-        return user;
+        try {
 
-        //YOUR CODE ENDS HERE
+            // Extract username from token
+            String username = jwtUtil.extractUsername(token);
+
+            // Optional: ensure user can only change their own password
+            if (!user.equals(username)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("Access denied");
+            }
+            userService.editUser(user);
+            return ResponseEntity.ok(user);
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid token");
+        }
+
     }
 
     @PutMapping("/updatePass/{id}")
@@ -83,6 +122,8 @@ public class UserController {
                         .body("Access denied");
             }
 
+            userService.editPassword(password, id);
+
             return ResponseEntity.ok("Success");
 
         } catch (Exception e) {
@@ -95,28 +136,63 @@ public class UserController {
     }
 
     @PutMapping("/addSkills/{id}")
-    public User addSkills(@PathVariable int id, @RequestBody List<String> Skills) {
+    public ResponseEntity<?> addSkills(@PathVariable int id, @RequestBody List<String> Skills,
+                          @RequestHeader("Authorization") String authHeader) {
         //YOUR CODE STARTS HERE
-        User user = userService.addSkills(Skills, id);
-        return user;
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Missing or invalid token");
+        }
+        String token = authHeader.substring(7);
 
-        //YOUR CODE ENDS HERE
+        try {
+
+
+            User user = userService.addSkills(Skills, id);
+
+            return ResponseEntity.ok(user);
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid token");
+        }
+
     }
 
     @PutMapping("/updatestatus/{id}")
-    public User updateStatus(@PathVariable int id, @RequestBody String status) {
+    public ResponseEntity<?> updateStatus(@PathVariable int id, @RequestBody String status,
+      @RequestHeader("Authorization") String authHeader) {
         //YOUR CODE STARTS HERE
-         userService.updateJobstatus(id,status);
-        return null;
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Missing or invalid token");
+        }
+        String token = authHeader.substring(7);
+
+        try {
+
+
+            userService.updateJobstatus(id,status);
+
+
+            return ResponseEntity.ok("success");
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid token");
+        }
+
 
         //YOUR CODE ENDS HERE
     }
 
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable int id) {
+    public ResponseEntity<String> deleteUser(@PathVariable int id) {
         //YOUR CODE STARTS HERE
         userService.deleteUser(id);
-
+        return ResponseEntity.ok("Success");
         //YOUR CODE ENDS HERE
     }
 
