@@ -23,13 +23,16 @@ public class UserController {
     private JwtUtil jwtUtil;
 
     @GetMapping("/user")
-    public List<User> getUserByName (@RequestBody String name){
-        return null;
+    public User getUserByName (@RequestBody String name){
+        User user = userService.findUserByUsername(name);
+        return user;
     }
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable int id){
-        return null;
+        User user = userService.findUserById(id);
+
+        return user;
     }
 
     @PostMapping("/add")
@@ -49,8 +52,9 @@ public class UserController {
     @PutMapping("/update/{id}")
     public User updateUser(@PathVariable int id, @RequestBody User user) {
         //YOUR CODE STARTS HERE
+        userService.editUser(user);
 
-        return null;
+        return user;
 
         //YOUR CODE ENDS HERE
     }
@@ -93,8 +97,8 @@ public class UserController {
     @PutMapping("/addSkills/{id}")
     public User addSkills(@PathVariable int id, @RequestBody List<String> Skills) {
         //YOUR CODE STARTS HERE
-
-        return null;
+        User user = userService.addSkills(Skills, id);
+        return user;
 
         //YOUR CODE ENDS HERE
     }
@@ -102,7 +106,7 @@ public class UserController {
     @PutMapping("/updatestatus/{id}")
     public User updateStatus(@PathVariable int id, @RequestBody String status) {
         //YOUR CODE STARTS HERE
-
+         userService.updateJobstatus(id,status);
         return null;
 
         //YOUR CODE ENDS HERE
@@ -111,7 +115,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable int id) {
         //YOUR CODE STARTS HERE
-
+        userService.deleteUser(id);
 
         //YOUR CODE ENDS HERE
     }
@@ -119,7 +123,6 @@ public class UserController {
     @DeleteMapping("/{id}/job")
     public void deleteUserJob(@PathVariable int id, @RequestBody Job job) {
         //YOUR CODE STARTS HERE
-
 
         //YOUR CODE ENDS HERE
     }

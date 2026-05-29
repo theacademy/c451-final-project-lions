@@ -17,18 +17,20 @@ public class JobController {
 
     @GetMapping("/Jobs")
     public List<Job> getAllJobs(@RequestBody String Job){
-        return null;
+
+        return jobService.getAllJobs();
     }
 
     @GetMapping("/{id}")
     public Job getJobById(@PathVariable int id){
-        return null;
+        Job jod  = jobService.findJobById(id);
+        return jod;
     }
 
     @DeleteMapping("/{id}")
     public void deleteJob(@PathVariable int id) {
         //YOUR CODE STARTS HERE
-
+        jobService.deleteJob(id);
 
         //YOUR CODE ENDS HERE
     }

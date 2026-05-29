@@ -3,6 +3,10 @@ package org.example.model;
 import java.util.List;
 
 public class User {
+    String last_name;
+    String email_address;
+    String password;
+    List<String> skills;
     public int getId() {
         return id;
     }
@@ -20,13 +24,6 @@ public class User {
        // this.last_name=lName;
     }
 
-    public List<String> getSkills() {
-        return skills;
-    }
-
-    public void setSkills(List<String> skills) {
-        this.skills = skills;
-    }
 
     public String getPassword() {
         return password;
@@ -36,20 +33,42 @@ public class User {
         this.password = password;
     }
 
-    public List<Job> getJods() {
-        return jods;
-    }
 
-    public void setJods(List<Job> jods) {
-        this.jods = jods;
-    }
 
     int id;
     String first_name;
-    String last_name;
-    String email_address;
-    List<String> skills;
-    String password;
-    List<Job> jods;
+
+    public String getFirst_name() {
+        return first_name;
+    }
+
+    public void setFirst_name(String first_name) {
+        this.first_name = first_name;
+    }
+
+    public String getLast_name() {
+        return last_name;
+    }
+
+    public void setLast_name(String last_name) {
+        this.last_name = last_name;
+    }
+
+    public String getEmail_address() {
+        return email_address;
+    }
+
+    public void setEmail_address(String email_address) {
+        this.email_address = email_address;
+    }
+
+
+    public List<String> getSkills() {
+        return skills;
+    }
+
+    public void setSkills(List<String> skills) {
+        this.skills = skills;
+    }
 }
 
