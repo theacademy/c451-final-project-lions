@@ -6,7 +6,9 @@ import org.example.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -15,118 +17,160 @@ public class UserServiceImpl implements UserServiceInterface {
 
     @Autowired
     private JwtUtil jwtUtil;
-    // Stores users using username as the key
-    private final Map<String, User> usersByName = new ConcurrentHashMap<>();
-    // Generates unique IDs for each new user
+
+    private final Map<String, User> usersByEmail = new ConcurrentHashMap<>();
     private final AtomicInteger idGenerator = new AtomicInteger(1);
 
     @Override
-    public User createNewUser(User user) { // Creates a new user and saves them
-        // Check if user data is missing (invalid request)
-        if (user == null || user.getName() == null || user.getPassword() == null) {
+    public User createNewUser(User user) {
+
+        if (user == null ||
+                user.getEmail_address() == null ||
+                user.getPassword() == null) {
             return null;
         }
-        // Check if a user with this username already exists
-        if (findUserByUsername(user.getName()) != null) {
+
+        if (findUserByEmail(user.getEmail_address()) != null) {
             return null;
         }
-        User newUser = new User();  // Create a new User object
-        newUser.setId(idGenerator.getAndIncrement()); // Assign a unique ID to the user
-        // Set username and password
-        newUser.setName(user.getName());
+
+        User newUser = new User();
+        newUser.setId(idGenerator.getAndIncrement());
+
+        newUser.setFirst_name(user.getFirst_name());
+        newUser.setLast_name(user.getLast_name());
+        newUser.setEmail_address(user.getEmail_address());
         newUser.setPassword(user.getPassword());
-        // Set skills (empty list if none provided)
-        newUser.setSkills(user.getSkills() == null ? new ArrayList<>() : user.getSkills());
-        // Save user in the map (username -> user)
-        usersByName.put(newUser.getName(), newUser);
+
+        newUser.setSkills(
+                user.getSkills() == null
+                        ? new ArrayList<>()
+                        : new ArrayList<>(user.getSkills())
+        );
+
+        usersByEmail.put(newUser.getEmail_address(), newUser);
 
         return newUser;
     }
 
-
-
     @Override
-    public List<User> getAllJobs() {
-        return List.of();
+    public List<User> getAllUsers() {
+        return new ArrayList<>(usersByEmail.values());
     }
 
     @Override
     public User findUserById(int id) {
+        for (User user : usersByEmail.values()) {
+            if (user.getId() == id) {
+                return user;
+            }
+        }
         return null;
     }
 
     @Override
     public void editUser(User user) {
 
+        User existing = findUserById(user.getId());
+
+        if (existing != null) {
+
+            String oldEmail = existing.getEmail_address();
+            String newEmail = user.getEmail_address();
+
+            existing.setFirst_name(user.getFirst_name());
+            existing.setLast_name(user.getLast_name());
+            existing.setPassword(user.getPassword());
+
+            if (user.getSkills() != null) {
+                existing.setSkills(user.getSkills());
+            }
+
+            if (newEmail != null && !newEmail.equals(oldEmail)) {
+
+                usersByEmail.remove(oldEmail);
+                existing.setEmail_address(newEmail);
+                usersByEmail.put(newEmail, existing);
+
+            } else {
+                existing.setEmail_address(oldEmail);
+            }
+        }
     }
 
     @Override
     public void editPassword(String password, int id) {
 
+        User user = findUserById(id);
+
+        if (user != null) {
+            user.setPassword(password);
+        }
     }
 
     @Override
     public User addSkills(List<String> skills, int id) {
-        return null;
+
+        User user = findUserById(id);
+
+        if (user != null && skills != null) {
+
+            if (user.getSkills() == null) {
+                user.setSkills(new ArrayList<>());
+            }
+
+            user.getSkills().addAll(skills);
+        }
+
+        return user;
     }
 
     @Override
     public void addJob(Job job, int id) {
-
+        System.out.println("addJob not implemented");
     }
 
     @Override
     public void updateJobstatus(int id, String status) {
-
+        System.out.println("updateJobstatus not implemented");
     }
-
 
     @Override
     public void deleteUser(int id) {
 
+        User user = findUserById(id);
+
+        if (user != null) {
+            usersByEmail.remove(user.getEmail_address());
+        }
     }
 
     @Override
-    // Finds and returns a user by their username
+    public User findUserByEmail(String email) {
+        return usersByEmail.get(email);
+    }
+
+    @Override
     public User findUserByUsername(String name) {
-        return usersByName.get(name);
+        return usersByEmail.get(name);
     }
 
     @Override
     public String login(User user) {
-        User userCheck = findUserByUsername(user.getName());
-        if(userCheck!=null &&
-                userCheck.getName().equals(user.getName())
-                &&userCheck.getPassword().equals(user.getPassword()))
-        {
-            String jwtToken = jwtUtil.generateToken(user.getName());
-            return jwtToken;
-        }
-        return "Error";
-    }
 
-    private int skillsMatch(int id, int jobid){
-        String jobDesc = "We are looking for Java, Spring Boot and SQL experience";
-
-        List<String> skills = Arrays.asList(
-                "java",
-                "spring boot",
-                "sql",
-                "python"
-        );
-
-        String normalized = jobDesc.toLowerCase();
-
-        Set<String> matched = new HashSet<>();
-
-        for (String skill : skills) {
-            if (normalized.contains(skill.toLowerCase())) {
-                matched.add(skill);
-            }
+        if (user == null || user.getEmail_address() == null || user.getPassword() == null) {
+            return null;
         }
 
+        User userCheck = findUserByEmail(user.getEmail_address());
 
-        return matched.size();
+        if (userCheck != null &&
+                userCheck.getPassword() != null &&
+                userCheck.getPassword().equals(user.getPassword())) {
+
+            return jwtUtil.generateToken(user.getEmail_address());
+        }
+
+        return null;
     }
-
 }
