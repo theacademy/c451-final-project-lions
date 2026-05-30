@@ -41,7 +41,7 @@ CREATE TABLE jobs (
     greenhouse_job_id BIGINT NOT NULL UNIQUE,
     company_id BIGINT NOT NULL,
     title VARCHAR(500) NOT NULL,
-    location VARCHAR(255),
+    location VARCHAR(1000),
     description_html MEDIUMTEXT,
     description_text MEDIUMTEXT,
     absolute_url VARCHAR(1000),

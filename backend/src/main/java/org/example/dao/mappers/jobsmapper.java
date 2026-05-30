@@ -12,9 +12,9 @@ public class jobsmapper  implements RowMapper<Job> {
     @Override
     public Job mapRow(ResultSet rs, int rowNum)  throws SQLException {
         Job job = new Job();
-         job.setId(rs.getInt("id"));
-         job.setGreenhouseJobId(rs.getInt("greenhouse_job_id"));
-         job.setCompanyId(rs.getInt("company_id"));
+         job.setId(rs.getLong("id"));
+         job.setGreenhouseJobId(rs.getLong("greenhouse_job_id"));
+         job.setCompanyId(rs.getLong("company_id"));
          job.setTitle(rs.getString("title"));
          job.setLocation(rs.getString("location"));
          job.setDescriptionHtml(rs.getString("description_html"));
