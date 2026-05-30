@@ -27,7 +27,7 @@ public interface UserServiceInterface {
 
     User findUserByEmail(String email);
 
-    // kept for compatibility, but conceptually redundant (email already serves as username)
+
     User findUserByUsername(String name);
 
     String login(User user);
