@@ -6,9 +6,7 @@ import org.example.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -173,4 +171,27 @@ public class UserServiceImpl implements UserServiceInterface {
 
         return null;
     }
+    //temp
+    private int skillMatch(String parg){//temp
+        String jobDesc = "We are looking for Java, Spring Boot and SQL experience";
+
+        List<String> skills = Arrays.asList(
+                "java",
+                "spring boot",
+                "sql",
+                "python"
+        );
+
+        String normalized = jobDesc.toLowerCase();
+
+        Set<String> matched = new HashSet<>();
+
+        for (String skill : skills) {
+            if (normalized.contains(skill.toLowerCase())) {
+                matched.add(skill);
+            }
+        }
+
+        return matched.size();
+    }//temp
 }
