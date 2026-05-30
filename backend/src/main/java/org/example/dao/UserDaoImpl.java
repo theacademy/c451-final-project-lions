@@ -4,96 +4,91 @@ import org.example.dao.mappers.userMapper;
 import org.example.model.Job;
 import org.example.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 
-@Repository
 public class UserDaoImpl implements UserDao{
+
     @Autowired
-    JdbcTemplate jdbc;
+    private JdbcTemplate jdbc;
 
     @Override
-    @Transactional
     public User createNewUser(User user) {
+        String sql = """
+            INSERT INTO users (email_address, password_hash, first_name, last_name)
+            VALUES (?, ?, ?, ?)
+            """;
 
+        KeyHolder keyHolder = new GeneratedKeyHolder();
 
+        jdbc.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, user.getEmail_address());
+            ps.setString(2, user.getPassword());
+            ps.setString(3, user.getFirst_name());
+            ps.setString(4, user.getLast_name());
+            return ps;
+        }, keyHolder);
 
-        final String INSERT_USER = "INSERT INTO users(email_address,password_hash,first_name,last_name)"+
-                "VALUES(?,?,?,?)";
-        jdbc.update(INSERT_USER,
-                user.getEmail_address(),
-                user.getPassword(),
-                user.getFirst_name(),
-                user.getLast_name());
-        int newId = jdbc.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
-        user.setId(newId);
+        if (keyHolder.getKey() != null) {
+            user.setId(keyHolder.getKey().intValue());
+        }
         return user;
     }
 
     @Override
-    public List<User> getAllJobs() {
-
-        return List.of();
+    public List<User> getAllUsers() {
+        String sql = "SELECT id, email_address, password_hash, first_name, last_name FROM users";
+        return jdbc.query(sql, new userMapper());
     }
 
     @Override
     public User findUserById(int id) {
-        try {
-            final String SELECT_USER_BY_ID = "SELECT * FROM users WHERE id = ?";
-            return jdbc.queryForObject(SELECT_USER_BY_ID, new userMapper(), id);
-        } catch (DataAccessException ex){
-            return null;
-        }
+        String sql = """
+            SELECT id, email_address, password_hash, first_name, last_name
+            FROM users WHERE id = ?
+            """;
+        return jdbc.query(sql, new userMapper(), id)
+                .stream().findFirst().orElse(null);
+    }
 
-
+    @Override
+    public User findUserByEmail(String email) {
+        String sql = """
+            SELECT id, email_address, password_hash, first_name, last_name
+            FROM users WHERE email_address = ?
+            """;
+        return jdbc.query(sql, new userMapper(), email)
+                .stream().findFirst().orElse(null);
     }
 
     @Override
     public void editUser(User user) {
-        final String INSERT_USER = "UPDATE users SET email_address = ?, password_hash = ?, first_name = ?, last_name = ?"+
-                "WHERE id = ?";
-        jdbc.update(INSERT_USER,
+        String sql = """
+            UPDATE users
+            SET email_address = ?, first_name = ?, last_name = ?
+            WHERE id = ?
+            """;
+        jdbc.update(sql,
                 user.getEmail_address(),
-                user.getPassword(),
                 user.getFirst_name(),
                 user.getLast_name(),
                 user.getId());
     }
 
     @Override
-    public void editPassword(String password, int id) {
-        final String INSERT_USER = "UPDATE users SET password_hash = ?"+
-                "WHERE id = ?";
-        jdbc.update(INSERT_USER,
-                password,
-                id);
-    }
-
-    @Override
-    public User addSkills(List<String> skills, int id) {
-        return null;
-    }
-
-    @Override
-    public void addJob(Job job, int id) {
-
+    public void editPassword(String passwordHash, int id) {
+        String sql = "UPDATE users SET password_hash = ? WHERE id = ?";
+        jdbc.update(sql, passwordHash, id);
     }
 
     @Override
     public void deleteUser(int id) {
-        final String DELETE_TRACKED_JOBS = "DELETE FROM tracked_jobs "
-                + "WHERE user_id = ?";
-        jdbc.update(DELETE_TRACKED_JOBS, id);
-        final String DELETE_PEREFRANCE = "DELETE FROM user_preferences "
-                + "WHERE user_id = ?";
-        jdbc.update(DELETE_PEREFRANCE, id);
-
-        final String DELETE_USER = "DELETE FROM users "
-                + "WHERE id = ?";
-        jdbc.update(DELETE_USER, id);
+        jdbc.update("DELETE FROM users WHERE id = ?", id);
     }
 }

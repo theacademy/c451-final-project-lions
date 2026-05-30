@@ -1,6 +1,6 @@
 package org.example.dao;
 
-import org.example.model.Job;
+
 import org.example.model.User;
 
 import java.util.List;
@@ -8,17 +8,15 @@ import java.util.List;
 public interface UserDao {
     User createNewUser(User user);
 
-    List<User> getAllJobs();
+    List<User> getAllUsers();
 
     User findUserById(int id);
 
+    User findUserByEmail(String email);
+
     void editUser(User user);
 
-    void editPassword(String password, int id);
-
-    User addSkills(List<String> skills, int id);
-
-    void addJob(Job job, int id);
+    void editPassword(String passwordHash, int id);
 
     void deleteUser(int id);
 
