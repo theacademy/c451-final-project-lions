@@ -3,6 +3,8 @@ package org.example.controller;
 import org.example.model.Job;
 import org.example.service.JobServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,21 +18,26 @@ public class JobController {
     JobServiceImpl jobService;
 
     @GetMapping("/Jobs")
-    public List<Job> getAllJobs(@RequestBody String Job){
-        return null;
+    public ResponseEntity<List<Job>> getAllJobs(@RequestBody String Job){
+
+        return ResponseEntity.ok(jobService.getAllJobs());
     }
 
     @GetMapping("/{id}")
-    public Job getJobById(@PathVariable int id){
-        return null;
+    public ResponseEntity<?> getJobById(@PathVariable int id){
+
+        Job jod  = jobService.findJobById(id);
+        if(jod==null){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Not matching");
+        }
+        return ResponseEntity.ok(jod);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteJob(@PathVariable int id) {
-        //YOUR CODE STARTS HERE
+    public ResponseEntity deleteJob(@PathVariable int id) {
 
-
-        //YOUR CODE ENDS HERE
+        jobService.deleteJob(id);
+        return ResponseEntity.ok("success");
     }
 
     @DeleteMapping("/refresh")

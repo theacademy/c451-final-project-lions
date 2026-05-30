@@ -2,9 +2,9 @@ package org.example.model;
 
 import java.sql.Timestamp;
 public class Job {
-    private Integer id;
-    private Integer greenhouseJobId;
-    private Integer companyId;
+    private Long id;
+    private Long greenhouseJobId;
+    private Long companyId;
     private String title;
     private String location;
     private String descriptionHtml;
@@ -22,27 +22,27 @@ public class Job {
     }
 
     // Getters and Setters
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public Integer getGreenhouseJobId() {
+    public Long getGreenhouseJobId() {
         return greenhouseJobId;
     }
 
-    public void setGreenhouseJobId(Integer greenhouseJobId) {
+    public void setGreenhouseJobId(Long greenhouseJobId) {
         this.greenhouseJobId = greenhouseJobId;
     }
 
-    public Integer getCompanyId() {
+    public Long getCompanyId() {
         return companyId;
     }
 
-    public void setCompanyId(Integer companyId) {
+    public void setCompanyId(Long companyId) {
         this.companyId = companyId;
     }
 
@@ -135,3 +135,5 @@ public class Job {
     }
 
 }
+
+
