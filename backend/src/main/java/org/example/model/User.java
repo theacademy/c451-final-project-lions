@@ -3,10 +3,10 @@ package org.example.model;
 import java.util.List;
 
 public class User {
-    String last_name;
-    String email_address;
-    String password;
-    List<String> skills;
+    private String last_name;
+    private String email_address;
+    private String password;
+    private List<String> skills;
     public int getId() {
         return id;
     }

@@ -16,9 +16,10 @@ public class UserPreferenceDaoImpl implements UserPreferenceDao{
 
     @Override
     public UserPreference createNewUserPreference(UserPreference preference) {
-        final String INSERT_PREFERENCE = "INSERT INTO user_preferences(  years_experience, desired_location, remote_preference, job_type, skills_csv) "
+        final String INSERT_PREFERENCE = "INSERT INTO user_preferences( user_id, years_experience, desired_location, remote_preference, job_type, skills_csv) "
                 + "VALUES(?,?,?,?,?)";
         jdbc.update(INSERT_PREFERENCE,
+                preference.getUser_id(),
                 preference.getYears_experience(),
                 preference.getDesired_location(),
                 preference.getRemote_preference(),

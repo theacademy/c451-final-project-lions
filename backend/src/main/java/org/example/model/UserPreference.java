@@ -4,12 +4,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public class UserPreference {
-    int user_id;
-    int years_experience;
-    String desired_location;
-    String remote_preference;
-    String job_type;
-    List<String> skills_csv;
+    private int user_id;
+    private int years_experience;
+    private String desired_location;
+    private String remote_preference;
+    private String job_type;
+    private List<String> skills_csv;
 
     public int getUser_id() {
         return user_id;
