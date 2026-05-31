@@ -18,7 +18,7 @@ public class JobController {
     JobServiceImpl jobService;
 
     @GetMapping("/Jobs")
-    public ResponseEntity<List<Job>> getAllJobs(@RequestBody String Job){
+    public ResponseEntity<List<Job>> getAllJobs(){
 
         return ResponseEntity.ok(jobService.getAllJobs());
     }
