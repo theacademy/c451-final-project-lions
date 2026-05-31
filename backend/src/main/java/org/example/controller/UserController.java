@@ -23,13 +23,21 @@ public class UserController {
     private JwtUtil jwtUtil;
 
     @GetMapping("/user")
-    public List<User> getUserByName (@RequestBody String name){
-        return null;
+    public ResponseEntity getUserByEmail (@RequestBody String email){
+        User user =userService.findUserByUsername(email);
+        if(user ==null ){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Not matching");
+        }
+        return ResponseEntity.ok(user);
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable int id){
-        return null;
+    public ResponseEntity getUserById(@PathVariable int id){
+        User user =userService.findUserById(id);
+        if(user ==null ){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Not matching");
+        }
+        return ResponseEntity.ok(user);
     }
 
     @PostMapping("/add")
