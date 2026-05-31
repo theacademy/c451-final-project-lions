@@ -1,5 +1,7 @@
 package org.example.service;
 
+import org.example.dao.JobDao;
+import org.example.dao.JobDaoImpl;
 import org.example.model.Job;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,6 +20,9 @@ public class JobServiceImpl implements JobServiceInterface {
 
     @Autowired
     private JdbcTemplate jdbc;
+
+    @Autowired
+    private JobDaoImpl JobDao;
 
     @Override
     public Job createNewJob(Job job) {
@@ -48,10 +53,10 @@ public class JobServiceImpl implements JobServiceInterface {
             if (key != null) {
                 job.setId(key.longValue());
             } else {
-                Job existingJob = findJobByGreenhouseId(job.getGreenhouseJobId());
-                if (existingJob != null) {
-                    job.setId(existingJob.getId());
-                }
+//                Job existingJob = findJobByGreenhouseId(job.getGreenhouseJobId());
+//                if (existingJob != null) {
+//                    job.setId(existingJob.getId());
+//                }
             }
         }
 
@@ -60,15 +65,15 @@ public class JobServiceImpl implements JobServiceInterface {
 
     @Override
     public List<Job> getAllJobs() {
+
         String sql = "SELECT * FROM jobs";
         return jdbc.query(sql, this::mapJob);
     }
 
     @Override
     public Job findJobById(int id) {
-        String sql = "SELECT * FROM jobs WHERE id = ?";
-        List<Job> jobs = jdbc.query(sql, new Object[]{id}, this::mapJob);
-        return jobs.isEmpty() ? null : jobs.get(0);
+        Job jod = JobDao.findJobById(id);
+        return jod;
     }
 
     @Override
@@ -95,17 +100,16 @@ public class JobServiceImpl implements JobServiceInterface {
 
     @Override
     public void deleteJob(int id) {
-        String sql = "DELETE FROM jobs WHERE id = ?";
-        jdbc.update(sql, id);
+       JobDao.deleteJob(id);
     }
 
-    private Job findJobByGreenhouseId(Long greenhouseJobId) {
+    public List<Job> findJobByGreenhouseId(Long greenhouseJobId) {
         if (greenhouseJobId == null) {
             return null;
         }
-        String sql = "SELECT * FROM jobs WHERE greenhouse_job_id = ?";
-        List<Job> jobs = jdbc.query(sql, new Object[]{greenhouseJobId}, this::mapJob);
-        return jobs.isEmpty() ? null : jobs.get(0);
+
+        List<Job> jobs = JobDao.getAllJobs(greenhouseJobId, 2);
+        return jobs.isEmpty() ? null : jobs;
     }
 
     private Job mapJob(ResultSet rs, int rowNum) throws SQLException {
