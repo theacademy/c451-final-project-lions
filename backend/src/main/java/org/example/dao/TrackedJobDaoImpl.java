@@ -14,7 +14,7 @@ public class TrackedJobDaoImpl implements TrackedJobDao{
     JdbcTemplate jdbc;
 
     @Override
-    public TrackedJob createNewUserPreference(TrackedJob trackedJob) {
+    public TrackedJob createNewTrackedJob(TrackedJob trackedJob) {
         final String INSERT_TRACKED = "INSERT INTO tracked_jobs(  user_id, job_id, status, notes, applied_at) "
                 + "VALUES(?,?,?,?,?)";
         jdbc.update(INSERT_TRACKED,
@@ -29,7 +29,7 @@ public class TrackedJobDaoImpl implements TrackedJobDao{
     }
 
     @Override
-    public TrackedJob findUserPreferenceById(int id) {
+    public TrackedJob findTrackedJobById(int id) {
         try {
             final String SELECT_TRACKED_BY_ID = "SELECT * FROM tracked_jobs WHERE id = ?";
             return jdbc.queryForObject(SELECT_TRACKED_BY_ID, new trackedJobsMapper(), id);
@@ -39,7 +39,7 @@ public class TrackedJobDaoImpl implements TrackedJobDao{
     }
 
     @Override
-    public void updateUserPreference(TrackedJob trackedJob) {
+    public void updateTrackedJob(TrackedJob trackedJob) {
         final String UPDATE_TRACKED = "UPDATE tracked_jobs SET user_id = ?, job_id = ?, status = ?, notes = ?, applied_at = ?  "
                 + "WHERE id = ?";
         jdbc.update(UPDATE_TRACKED,
@@ -52,7 +52,7 @@ public class TrackedJobDaoImpl implements TrackedJobDao{
     }
 
     @Override
-    public void deleteUserPreference(int id) {
+    public void deleteTrackedJob(int id) {
         final String DELETE_TRACKED = "DELETE FROM tracked_jobs "
                 + "WHERE id = ?";
         jdbc.update(DELETE_TRACKED, id);

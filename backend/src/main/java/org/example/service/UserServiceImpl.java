@@ -1,7 +1,13 @@
 package org.example.service;
 
+import org.example.dao.TrackedJobDao;
+import org.example.dao.UserDao;
+import org.example.dao.UserDaoImpl;
+import org.example.dao.UserPreferenceDao;
 import org.example.model.Job;
+import org.example.model.TrackedJob;
 import org.example.model.User;
+import org.example.model.UserPreference;
 import org.example.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -28,6 +34,15 @@ public class UserServiceImpl implements UserServiceInterface {
     @Autowired
     private JdbcTemplate jdbc;
 
+    @Autowired
+    private UserDaoImpl userDao;
+
+    @Autowired
+    private UserPreferenceDao userPreferenceDao;
+
+    @Autowired
+    private TrackedJobDao trackedJobDao;
+
     @Override
     public User createNewUser(User user) {
         if (user == null || user.getEmail_address() == null || user.getPassword() == null) {
@@ -38,29 +53,9 @@ public class UserServiceImpl implements UserServiceInterface {
             return null;
         }
 
-        String sql = "INSERT INTO users (email_address, password_hash, first_name, last_name) VALUES (?, ?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbc.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, user.getEmail_address());
-            ps.setString(2, user.getPassword());
-            ps.setString(3, user.getFirst_name());
-            ps.setString(4, user.getLast_name());
-            return ps;
-        }, keyHolder);
 
-        Number key = keyHolder.getKey();
-        if (key == null) {
-            return null;
-        }
-
-        int id = key.intValue();
-        user.setId(id);
-        if (user.getSkills() == null) {
-            user.setSkills(new ArrayList<>());
-        }
-        saveOrUpdatePreferences(id, user.getSkills());
-        return user;
+        //saveOrUpdatePreferences(id, user.getSkills());
+        return userDao.createNewUser(user);
     }
 
     @Override
@@ -72,57 +67,46 @@ public class UserServiceImpl implements UserServiceInterface {
 
     @Override
     public User findUserById(int id) {
-        String sql = "SELECT u.id, u.email_address, u.password_hash, u.first_name, u.last_name, COALESCE(up.skills_csv, '') AS skills_csv " +
-                "FROM users u LEFT JOIN user_preferences up ON u.id = up.user_id WHERE u.id = ?";
-        List<User> users = jdbc.query(sql, new Object[]{id}, new UserRowMapper());
-        return users.isEmpty() ? null : users.get(0);
+
+        return userDao.findUserById(id);
     }
 
     @Override
-    public void editUser(User user) {
+    public User editUser(User user) {
         if (user == null || user.getId() == 0) {
-            return;
+            return null;
         }
 
         User existing = findUserById(user.getId());
         if (existing == null) {
-            return;
+            return null;
         }
 
-        String newEmail = user.getEmail_address();
-        if (newEmail != null && !newEmail.equals(existing.getEmail_address())) {
-            User byEmail = findUserByEmail(newEmail);
-            if (byEmail != null && byEmail.getId() != user.getId()) {
-                return;
-            }
-        }
+//        String newEmail = user.getEmail_address();
+//        if (newEmail != null && !newEmail.equals(existing.getEmail_address())) {
+//            User byEmail = findUserByEmail(newEmail);
+//            if (byEmail != null && byEmail.getId() != user.getId()) {
+//                return;
+//            }
+//        }
+        userDao.editUser(user);
+        return user;
 
-        String sql = "UPDATE users SET email_address = ?, first_name = ?, last_name = ?, password_hash = ? WHERE id = ?";
-        jdbc.update(sql,
-                user.getEmail_address() != null ? user.getEmail_address() : existing.getEmail_address(),
-                user.getFirst_name() != null ? user.getFirst_name() : existing.getFirst_name(),
-                user.getLast_name() != null ? user.getLast_name() : existing.getLast_name(),
-                user.getPassword() != null ? user.getPassword() : existing.getPassword(),
-                user.getId());
-
-        if (user.getSkills() != null) {
-            saveOrUpdatePreferences(user.getId(), user.getSkills());
-        }
     }
 
     @Override
-    public void editPassword(String password, int id) {
+    public String editPassword(String password, int id) {
         if (password == null) {
-            return;
+            return null;
         }
-        String sql = "UPDATE users SET password_hash = ? WHERE id = ?";
-        jdbc.update(sql, password, id);
+        userDao.editPassword(password, id);
+        return password;
     }
 
     @Override
-    public User addSkills(List<String> skills, int id) {
-        if (skills == null || skills.isEmpty()) {
-            return findUserById(id);
+    public User addSkills(UserPreference skills, int id) {
+        if (skills == null ) {
+            return null;
         }
 
         User user = findUserById(id);
@@ -130,10 +114,24 @@ public class UserServiceImpl implements UserServiceInterface {
             return null;
         }
 
-        List<String> mergedSkills = new ArrayList<>(user.getSkills() != null ? user.getSkills() : Collections.emptyList());
-        mergedSkills.addAll(skills);
-        saveOrUpdatePreferences(id, mergedSkills);
-        user.setSkills(mergedSkills);
+        userPreferenceDao.createNewUserPreference(skills);
+        //saveOrUpdatePreferences(id, mergedSkills);
+        return user;
+    }
+
+    @Override
+    public User updateSkills(UserPreference skills, int id) {
+        if (skills == null ) {
+            return null;
+        }
+
+        User user = findUserById(id);
+        if (user == null) {
+            return null;
+        }
+
+        userPreferenceDao.updateUserPreference(skills);
+        //saveOrUpdatePreferences(id, mergedSkills);
         return user;
     }
 
@@ -149,19 +147,26 @@ public class UserServiceImpl implements UserServiceInterface {
     }
 
     @Override
-    public void updateJobstatus(int id, String status) {
-        if (status == null || status.isEmpty()) {
-            return;
+    public TrackedJob updateJobstatus(int id, TrackedJob status) {
+        if (status == null ) {
+            return null;
         }
+        trackedJobDao.updateTrackedJob(status);
+        return status;
+    }
 
-        String sql = "UPDATE tracked_jobs SET status = ?, updated_at = NOW() WHERE user_id = ?";
-        jdbc.update(sql, status, id);
+    @Override
+    public TrackedJob addJobstatus( TrackedJob status) {
+        if (status == null ) {
+            return null;
+        }
+        status = trackedJobDao.createNewTrackedJob(status);
+        return status;
     }
 
     @Override
     public void deleteUser(int id) {
-        String sql = "DELETE FROM users WHERE id = ?";
-        jdbc.update(sql, id);
+        userDao.deleteUser(id);
     }
 
     @Override
@@ -170,10 +175,7 @@ public class UserServiceImpl implements UserServiceInterface {
             return null;
         }
 
-        String sql = "SELECT u.id, u.email_address, u.password_hash, u.first_name, u.last_name, COALESCE(up.skills_csv, '') AS skills_csv " +
-                "FROM users u LEFT JOIN user_preferences up ON u.id = up.user_id WHERE u.email_address = ?";
-        List<User> users = jdbc.query(sql, new Object[]{email}, new UserRowMapper());
-        return users.isEmpty() ? null : users.get(0);
+        return userDao.findUserByEmail(email);
     }
 
     @Override

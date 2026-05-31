@@ -1,8 +1,9 @@
 package org.example.controller;
 
 import org.example.model.Job;
+import org.example.model.TrackedJob;
 import org.example.model.User;
-import org.example.service.JobServiceImpl;
+import org.example.model.UserPreference;
 import org.example.service.UserServiceImpl;
 import org.example.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class UserController {
 
     @GetMapping("/user")
     public ResponseEntity getUserByEmail (@RequestBody String email){
-        User user =userService.findUserByUsername(email);
+        User user =userService.findUserByEmail(email);
         if(user ==null ){
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Not matching");
         }
@@ -43,22 +44,60 @@ public class UserController {
     @PostMapping("/add")
     // Method to add/create a new user
     // Send the user object to the service layer to create/save the user
-    public User addUser(@RequestBody User user) {
-        return userService.createNewUser(user);
+    public ResponseEntity addUser(@RequestBody User user) {
+        User newUser =userService.createNewUser(user);
+        if(newUser ==null ){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Not matching");
+        }
+        return ResponseEntity.ok(newUser);
     }
 
     @PostMapping("/login")
     // Method used to log a user in
     // Send the user's login details to the service layer
-    public String login(@RequestBody User user){
-        return userService.login(user);
+    public ResponseEntity<String> login(@RequestBody User user){
+        String jwt = userService.login(user);
+        if(jwt ==null ){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Not matching");
+        }
+        return ResponseEntity.ok(jwt);
     }
 
     @PutMapping("/update/{id}")
-    public User updateUser(@PathVariable int id, @RequestBody User user) {
+    public ResponseEntity updateUser(@PathVariable int id, @RequestBody User user
+            ,
+                           @RequestHeader("Authorization") String authHeader) {
         //YOUR CODE STARTS HERE
 
-        return null;
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Missing or invalid token");
+        }
+
+        String token = authHeader.substring(7);
+
+        try {
+
+            String username = jwtUtil.extractUsername(token);
+
+
+            // Optional: ensure user can only change their own password
+            if (!user.equals(username)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("Access denied");
+            }
+            User newUser =userService.editUser(user);
+            if(newUser ==null ){
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Not matching");
+            }
+
+            return ResponseEntity.ok(newUser);
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid token");
+        }
 
         //YOUR CODE ENDS HERE
     }
@@ -86,6 +125,7 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body("Access denied");
             }
+            userService.editPassword(password,id);
 
             return ResponseEntity.ok("Success");
 
@@ -99,28 +139,140 @@ public class UserController {
     }
 
     @PutMapping("/addSkills/{id}")
-    public User addSkills(@PathVariable int id, @RequestBody List<String> Skills) {
+    public ResponseEntity addSkills(@PathVariable int id, @RequestBody UserPreference Skills,
+                          @RequestHeader("Authorization") String authHeader) {
+        //YOUR CODE STARTS HERE
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Missing or invalid token");
+        }
+
+
+
+        try {
+
+
+            userService.addSkills(Skills,id);
+
+            return ResponseEntity.ok("Success");
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid token");
+        }
+
+
+
+        //YOUR CODE ENDS HERE
+    }
+
+    @PutMapping("/updateSkills/{id}")
+    public ResponseEntity updateSkills(@PathVariable int id, @RequestBody UserPreference Skills,
+                                    @RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Missing or invalid token");
+        }
+
+        try {
+
+            userService.updateSkills(Skills,id);
+
+            return ResponseEntity.ok("Success");
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid token");
+        }
+
+    }
+
+    @PostMapping("/addstatus/{id}")
+    public ResponseEntity addStatus(@PathVariable int id, @RequestBody TrackedJob status,
+                             @RequestHeader("Authorization") String authHeader) {
         //YOUR CODE STARTS HERE
 
-        return null;
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Missing or invalid token");
+        }
+
+        try {
+
+            return ResponseEntity.ok(userService.addJobstatus(status));
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid token");
+        }
+
 
         //YOUR CODE ENDS HERE
     }
 
     @PutMapping("/updatestatus/{id}")
-    public User updateStatus(@PathVariable int id, @RequestBody String status) {
+    public ResponseEntity updateStatus(@PathVariable int id, @RequestBody TrackedJob status,
+                             @RequestHeader("Authorization") String authHeader) {
         //YOUR CODE STARTS HERE
 
-        return null;
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Missing or invalid token");
+        }
+
+        try {
+
+            return ResponseEntity.ok(userService.updateJobstatus(id,status));
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid token");
+        }
+
 
         //YOUR CODE ENDS HERE
     }
 
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable int id) {
+    public ResponseEntity<String> deleteUser(@PathVariable int id,
+                                             @RequestHeader("Authorization") String authHeader) {
         //YOUR CODE STARTS HERE
 
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Missing or invalid token");
+        }
 
+        // Extract JWT token
+        String token = authHeader.substring(7);
+
+        try {
+            User user = userService.findUserById(id);
+            // Extract username from token
+            String username = jwtUtil.extractUsername(token);
+
+            // Optional: ensure user can only change their own password
+            if(user != null){
+                if (!user.getEmail_address().equals(username) ) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                            .body("Access denied");
+                }
+                userService.deleteUser(id);
+            }
+
+
+
+            return ResponseEntity.ok("Success");
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid token");
+        }
         //YOUR CODE ENDS HERE
     }
 
