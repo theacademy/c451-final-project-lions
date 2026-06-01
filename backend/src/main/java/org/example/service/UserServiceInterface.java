@@ -1,7 +1,9 @@
 package org.example.service;
 
 import org.example.model.Job;
+import org.example.model.TrackedJob;
 import org.example.model.User;
+import org.example.model.UserPreference;
 
 import java.util.List;
 
@@ -13,9 +15,9 @@ public interface UserServiceInterface {
 
     User findUserById(int id);
 
-    void editUser(User user);
+    User editUser(User user);
 
-    void editPassword(String password, int id);
+    String editPassword(String password, int id);
 
     void deleteUser(int id);
 

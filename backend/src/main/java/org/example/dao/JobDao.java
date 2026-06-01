@@ -7,7 +7,7 @@ import java.util.List;
 public interface JobDao {
     Job createNewJob(Job job);
 
-    List<Job> getAllJobs();
+    List<Job> getAllJobs(Long company_id, int page);
 
     Job findJobById(int id);
 
