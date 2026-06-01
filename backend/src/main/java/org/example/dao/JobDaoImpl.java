@@ -35,6 +35,20 @@ public class JobDaoImpl  implements JobDao{
     }
 
     @Override
+    public List<Job> getAllJobs(int page) {
+        int pageSize = 20;
+        int offset = page * pageSize;
+        try {
+            final String SELECT_JOBS_BY_ID = "SELECT * FROM jobs" +
+                    "LIMIT ? OFFSET ?";
+            return jdbc.query(SELECT_JOBS_BY_ID, new jobsmapper(), pageSize, offset);
+        } catch(DataAccessException ex) {
+            return null;
+        }
+
+    }
+
+    @Override
     public Job findJobById(int id) {
 
         try {

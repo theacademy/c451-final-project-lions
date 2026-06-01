@@ -24,6 +24,12 @@ public class JobController {
         return ResponseEntity.ok(jobService.findJobByGreenhouseId(id));
     }
 
+    @GetMapping("/Job")
+    public ResponseEntity<List<Job>> getAllJobs(){
+        List<Job> jods  =jobService.getAllJobs();
+        return ResponseEntity.ok(jods);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getJobById(@PathVariable int id){
 
@@ -42,11 +48,19 @@ public class JobController {
     }
 
     @GetMapping("/Search")
-    public void refreshJob(@PathVariable int id, @RequestBody Search search) {
+    public ResponseEntity SearchJob(@PathVariable int id, @RequestBody Search search) {
         //YOUR CODE STARTS HERE
-
+        List<Job> jods  = jobService.searchJob(search);
+        if(jods==null){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Not matching");
+        }
+        return ResponseEntity.ok(jods);
 
         //YOUR CODE ENDS HERE
     }
+
+
+
+
 
 }
