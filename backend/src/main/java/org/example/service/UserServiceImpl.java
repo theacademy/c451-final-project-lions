@@ -1,176 +1,100 @@
 package org.example.service;
 
-import org.example.model.Job;
+import org.example.dao.UserDao;
 import org.example.model.User;
 import org.example.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
+
 
 @Service
 public class UserServiceImpl implements UserServiceInterface {
 
     @Autowired
     private JwtUtil jwtUtil;
-
-    private final Map<String, User> usersByEmail = new ConcurrentHashMap<>();
-    private final AtomicInteger idGenerator = new AtomicInteger(1);
-
+    @Autowired
+    private UserDao userDao;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     @Override
     public User createNewUser(User user) {
 
-        if (user == null ||
-                user.getEmail_address() == null ||
-                user.getPassword() == null) {
+        if (user == null
+                || isBlank(user.getEmail_address())
+                || isBlank(user.getPassword())
+                || isBlank(user.getFirst_name())
+                || isBlank(user.getLast_name())) {
             return null;
         }
 
-        if (findUserByEmail(user.getEmail_address()) != null) {
+        // Reject duplicate emails
+        if (userDao.findUserByEmail(user.getEmail_address()) != null) {
             return null;
         }
 
-        User newUser = new User();
-        newUser.setId(idGenerator.getAndIncrement());
+        // Hash before persisting
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        newUser.setFirst_name(user.getFirst_name());
-        newUser.setLast_name(user.getLast_name());
-        newUser.setEmail_address(user.getEmail_address());
-        newUser.setPassword(user.getPassword());
-
-        newUser.setSkills(
-                user.getSkills() == null
-                        ? new ArrayList<>()
-                        : new ArrayList<>(user.getSkills())
-        );
-
-        usersByEmail.put(newUser.getEmail_address(), newUser);
-
-        return newUser;
+        return userDao.createNewUser(user);
     }
 
     @Override
     public List<User> getAllUsers() {
-        return new ArrayList<>(usersByEmail.values());
+        return userDao.getAllUsers();
     }
 
     @Override
     public User findUserById(int id) {
-        for (User user : usersByEmail.values()) {
-            if (user.getId() == id) {
-                return user;
-            }
-        }
-        return null;
+        return userDao.findUserById(id);
     }
 
     @Override
     public void editUser(User user) {
-
-        User existing = findUserById(user.getId());
-
-        if (existing != null) {
-
-            String oldEmail = existing.getEmail_address();
-            String newEmail = user.getEmail_address();
-
-            existing.setFirst_name(user.getFirst_name());
-            existing.setLast_name(user.getLast_name());
-            existing.setPassword(user.getPassword());
-
-            if (user.getSkills() != null) {
-                existing.setSkills(user.getSkills());
-            }
-
-            if (newEmail != null && !newEmail.equals(oldEmail)) {
-
-                usersByEmail.remove(oldEmail);
-                existing.setEmail_address(newEmail);
-                usersByEmail.put(newEmail, existing);
-
-            } else {
-                existing.setEmail_address(oldEmail);
-            }
-        }
+        userDao.editUser(user);
     }
 
     @Override
     public void editPassword(String password, int id) {
-
-        User user = findUserById(id);
-
-        if (user != null) {
-            user.setPassword(password);
+        if (password == null) {
+            return;
         }
-    }
-
-    @Override
-    public User addSkills(List<String> skills, int id) {
-
-        User user = findUserById(id);
-
-        if (user != null && skills != null) {
-
-            if (user.getSkills() == null) {
-                user.setSkills(new ArrayList<>());
-            }
-
-            user.getSkills().addAll(skills);
-        }
-
-        return user;
-    }
-
-    @Override
-    public void addJob(Job job, int id) {
-        System.out.println("addJob not implemented");
-    }
-
-    @Override
-    public void updateJobstatus(int id, String status) {
-        System.out.println("updateJobstatus not implemented");
+        // Hash the new password before it hits the DB
+        userDao.editPassword(passwordEncoder.encode(password), id);
     }
 
     @Override
     public void deleteUser(int id) {
-
-        User user = findUserById(id);
-
-        if (user != null) {
-            usersByEmail.remove(user.getEmail_address());
-        }
+        userDao.deleteUser(id);
     }
 
     @Override
     public User findUserByEmail(String email) {
-        return usersByEmail.get(email);
-    }
-
-    @Override
-    public User findUserByUsername(String name) {
-        return usersByEmail.get(name);
+        return userDao.findUserByEmail(email);
     }
 
     @Override
     public String login(User user) {
 
-        if (user == null || user.getEmail_address() == null || user.getPassword() == null) {
+        if (user == null
+                || isBlank(user.getEmail_address())
+                || isBlank(user.getPassword())) {
             return null;
         }
 
-        User userCheck = findUserByEmail(user.getEmail_address());
+        User userCheck = userDao.findUserByEmail(user.getEmail_address());
 
         if (userCheck != null &&
                 userCheck.getPassword() != null &&
-                userCheck.getPassword().equals(user.getPassword())) {
-
-            return jwtUtil.generateToken(user.getEmail_address());
+                passwordEncoder.matches(user.getPassword(), userCheck.getPassword())) {
+            // Token subject = the real user's email
+            return jwtUtil.generateToken(userCheck.getEmail_address());
         }
-
         return null;
+    }
+
+    private boolean isBlank(String s) {
+        return s == null || s.isBlank();
     }
 }
