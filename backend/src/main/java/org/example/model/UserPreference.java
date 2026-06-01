@@ -65,8 +65,7 @@ public class UserPreference {
                 .toList();
     }
     public String getSkills() {
-        return String.join(",", skills_csv);
-
+        return skills_csv == null ? "" : String.join(",", skills_csv);
     }
 
 

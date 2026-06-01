@@ -9,7 +9,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 @Repository
 public class JobDaoImpl  implements JobDao{
 
@@ -70,15 +74,66 @@ public class JobDaoImpl  implements JobDao{
             sql.append("LIMIT ?");
             params.add(pageSize);
 
-            return jdbc.query(
+            List<Job> jobs = jdbc.query(
                     sql.toString(),
                     new jobsmapper(),
                     params.toArray()
             );
 
+            if (jobs == null) {
+                return null;
+            }
+
+            Set<String> searchSkills = normalizeSkills(search.getSkills());
+            for (Job job : jobs) {
+                Set<String> jobSkills = normalizeSkills(job.getSkillsCsv());
+                int matchPercent = calculateMatchPercent(jobSkills, searchSkills);
+                job.setMatchPercent(matchPercent);
+            }
+
+            return jobs.stream()
+                    .sorted((a, b) -> Integer.compare(b.getMatchPercent(), a.getMatchPercent()))
+                    .collect(Collectors.toList());
+
         } catch (DataAccessException ex) {
             return null;
         }
+    }
+
+    private Set<String> normalizeSkills(List<String> skills) {
+        if (skills == null) {
+            return new HashSet<>();
+        }
+        return skills.stream()
+                .filter(s -> s != null && !s.isBlank())
+                .map(String::trim)
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<String> normalizeSkills(String skillsCsv) {
+        if (skillsCsv == null || skillsCsv.isBlank()) {
+            return new HashSet<>();
+        }
+        return Arrays.stream(skillsCsv.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isBlank())
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
+    }
+
+    private int calculateMatchPercent(Set<String> jobSkills, Set<String> searchSkills) {
+        if (jobSkills.isEmpty() || searchSkills.isEmpty()) {
+            return 0;
+        }
+
+        Set<String> intersection = new HashSet<>(jobSkills);
+        intersection.retainAll(searchSkills);
+        if (intersection.isEmpty()) {
+            return 0;
+        }
+
+        return (int) Math.round(100.0 * intersection.size() / jobSkills.size());
     }
 
     @Override

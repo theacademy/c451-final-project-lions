@@ -24,8 +24,8 @@ public class jobsmapper  implements RowMapper<Job> {
          job.setPostedAt(rs.getTimestamp("posted_at"));
         job.setLastSeenAt(rs.getTimestamp("last_seen_at"));
         job.setCreatedAt(rs.getTimestamp("created_at"));
-        job.setActive(rs.getBoolean("isActive"));
-        job.setSkillsCsv(rs.getString("skillsCsv"));
+        job.setActive(rs.getBoolean("is_active"));
+        job.setSkillsCsv(rs.getString("skills_csv"));
         return job;
     }
 }
