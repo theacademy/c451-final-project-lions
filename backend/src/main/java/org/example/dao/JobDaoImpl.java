@@ -25,8 +25,7 @@ public class JobDaoImpl  implements JobDao{
         int pageSize = 20;
         int offset = page * pageSize;
         try {
-            final String SELECT_JOBS_BY_ID = "SELECT * FROM jobs WHERE company_id = ?" +
-                    "LIMIT ? OFFSET ?";
+            final String SELECT_JOBS_BY_ID = "SELECT * FROM jobs WHERE company_id = ? LIMIT ? OFFSET ?";
             return jdbc.query(SELECT_JOBS_BY_ID, new jobsmapper(), company_id, pageSize, offset);
         } catch(DataAccessException ex) {
             return null;
@@ -39,8 +38,7 @@ public class JobDaoImpl  implements JobDao{
         int pageSize = 20;
         int offset = page * pageSize;
         try {
-            final String SELECT_JOBS_BY_ID = "SELECT * FROM jobs" +
-                    "LIMIT ? OFFSET ?";
+            final String SELECT_JOBS_BY_ID = "SELECT * FROM jobs LIMIT ? OFFSET ?";
             return jdbc.query(SELECT_JOBS_BY_ID, new jobsmapper(), pageSize, offset);
         } catch(DataAccessException ex) {
             return null;

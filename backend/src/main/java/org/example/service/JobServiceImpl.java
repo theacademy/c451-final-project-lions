@@ -66,8 +66,6 @@ public class JobServiceImpl implements JobServiceInterface {
 
     @Override
     public List<Job> getAllJobs() {
-
-
         return JobDao.getAllJobs(1);
     }
 

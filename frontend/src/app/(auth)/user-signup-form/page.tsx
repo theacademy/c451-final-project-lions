@@ -135,7 +135,7 @@ export default function UserSignUp() {
   const checkKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
     if (e.key === "Enter" && e.currentTarget.tagName !== "TEXTAREA") {
       e.preventDefault();
-      console.log("prevent form submission");
+      console.log("Prevent form submission");
     }
   };
 
@@ -161,9 +161,9 @@ export default function UserSignUp() {
   };
 
   return (
-    <>
-      <h1 className="text-4xl font-bold">Join us today</h1>
-      <div className="flex h-screen items-center justify-center">
+    <main className="flex flex-col grow max-w-3/4 mx-auto p-6 gap-6 justify-center items-center">
+      <h1 className="text-3xl font-bold">Join us today</h1>
+      <div className="flex items-center justify-center">
         <div className="card w-96 bg-base-100 card-md shadow-sm">
           <div className="card-body">
             <form
@@ -180,6 +180,7 @@ export default function UserSignUp() {
                 placeholder="Type here"
                 className="input"
                 id="firstName"
+                name="firstName"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 required
@@ -193,6 +194,7 @@ export default function UserSignUp() {
                 placeholder="Type here"
                 className="input"
                 id="lastName"
+                name="lastName"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 required
@@ -206,6 +208,7 @@ export default function UserSignUp() {
                 placeholder="Type here"
                 className="input"
                 id="email"
+                name="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -218,6 +221,7 @@ export default function UserSignUp() {
                 placeholder="Type here"
                 className="input"
                 id="password"
+                name="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -283,7 +287,7 @@ export default function UserSignUp() {
               <label htmlFor="locations">
                 Preferred location(s) <span className="text-primary">*</span>
               </label>
-              <div className="flex gap-3 flex-wrap">
+              <div className="flex gap-1 flex-wrap">
                 {allLocations.map((item) => (
                   <span key={item.key} className="border rounded-2xl p-2 px-4">
                     {item.loc}
@@ -308,38 +312,42 @@ export default function UserSignUp() {
                 onChange={(e) => setLocation(e.target.value)}
               />
               <fieldset>
-                <legend className="fieldset-legend">
+                {/* <legend className="fieldset-legend">
                   Preferred work style <span className="text-primary">*</span>
-                </legend>
-                <label className="label">
-                  <input
-                    type="checkbox"
-                    className="checkbox"
-                    name="work-type"
-                    value="in-person"
-                  />
-                  In-person
-                </label>
-
-                <label className="label">
-                  <input
-                    type="checkbox"
-                    className="checkbox"
-                    name="work-type"
-                    value="remote"
-                  />
-                  Remote
-                </label>
-
-                <label className="label">
-                  <input
-                    type="checkbox"
-                    className="checkbox"
-                    name="work-type"
-                    value="hybrid"
-                  />
-                  Hybrid
-                </label>
+                </legend> */}
+                <div className="flex flex-col gap-3">
+                  <label htmlFor="work-type">
+                    Preferred work style(s)
+                    <span className="text-primary">*</span>
+                  </label>{" "}
+                  <label className="label">
+                    <input
+                      type="checkbox"
+                      className="checkbox"
+                      name="work-type"
+                      value="in-person"
+                    />
+                    In-person
+                  </label>
+                  <label className="label">
+                    <input
+                      type="checkbox"
+                      className="checkbox"
+                      name="work-type"
+                      value="remote"
+                    />
+                    Remote
+                  </label>
+                  <label className="label">
+                    <input
+                      type="checkbox"
+                      className="checkbox"
+                      name="work-type"
+                      value="hybrid"
+                    />
+                    Hybrid
+                  </label>
+                </div>
               </fieldset>
 
               <button
@@ -353,6 +361,6 @@ export default function UserSignUp() {
           </div>
         </div>
       </div>
-    </>
+    </main>
   );
 }

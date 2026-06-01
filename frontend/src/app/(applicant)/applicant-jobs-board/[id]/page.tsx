@@ -1,3 +1,4 @@
+import { ApplicantMatchCard } from "@/src/components/match-card";
 import Image from "next/image";
 
 interface JobInfo {
@@ -12,9 +13,16 @@ interface JobInfo {
   jobType: string;
   key?: number;
   jobDescription: string;
-  skills: string[];
-  match: number;
 }
+
+interface MatchInfo {
+  match: number;
+  skills: string[];
+  applyButton: boolean;
+}
+
+const placeholderJobID = 1;
+const placeholderApplicantID = 1;
 
 const props: JobInfo = {
   domain: "morganstanley.com",
@@ -26,8 +34,6 @@ const props: JobInfo = {
   workType: "Hybrid",
   salary: "60k",
   jobType: "Full Time",
-  match: 80,
-  skills: ["Python", "Java", "HTML"],
   jobDescription: `We're seeking someone to join our Institutional Securities Technology E-trading team as a Principal Java Developer in FICFX to code, deliver software, and work closely with our clients on both sales and trading. The role will include a combination of long-term strategic development and shorter-term business focused development on the fixed-income trading platform. Morgan Stanley traders use this platform to trade Fixed Income Securitized products like Fixed Income Agency Debt, TBAs, Pools, and CMOs.
 
 In the Technology division, we leverage innovation to build the connections and capabilities that power our Firm, enabling our clients and colleagues to redefine markets and shape the future of our communities. This is a Software Engineering position at Vice-President level, which is part of the job family responsible for developing and maintaining software solutions that support business needs.
@@ -57,7 +63,7 @@ What you'll bring to the role:
 // Get the API publishable key
 const KEY = process.env.NEXT_PUBLIC_LOGO_DEV_PUBLISHABLE_KEY;
 
-export default function ApplicantJobPage(jobId: number) {
+export default function ApplicantJobPage() {
   // TODO: get information from database
 
   return (
@@ -88,21 +94,10 @@ export default function ApplicantJobPage(jobId: number) {
                   <br></br>
                 </p>
               </div>
-              <div className="card bg-base-100 w-96 shadow-sm p-2">
-                <div className="card-body justify-center gap-2 text-center">
-                  <h2 className="text-lg text-primary font-bold ">
-                    {props.match}% match
-                  </h2>
-                  <p className="flex-none">
-                    {props.skills.map((item, index) => (
-                      <span key={index}> {item}, </span>
-                    ))}
-                  </p>
-                  <button className="btn btn-primary btn-block">
-                    Apply now
-                  </button>
-                </div>
-              </div>
+              <ApplicantMatchCard
+                jobID={placeholderJobID}
+                applicantID={placeholderApplicantID}
+              />
             </div>
             <div className="pt-6">
               <h3 className="text-lg font-bold">Role Description</h3>
