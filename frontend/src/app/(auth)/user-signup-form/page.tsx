@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { redirect } from "next/navigation";
+import { signup } from "@/src/lib/api";
 
 interface technicalSkill {
   tskill: string;
