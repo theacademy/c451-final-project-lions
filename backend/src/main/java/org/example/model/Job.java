@@ -102,6 +102,16 @@ public class Job {
         this.skillsCsv = skillsCsv;
     }
 
+    private int matchPercent;
+
+    public int getMatchPercent() {
+        return matchPercent;
+    }
+
+    public void setMatchPercent(int matchPercent) {
+        this.matchPercent = matchPercent;
+    }
+
     public Timestamp getPostedAt() {
         return postedAt;
     }

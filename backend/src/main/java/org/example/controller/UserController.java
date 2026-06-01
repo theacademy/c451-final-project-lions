@@ -150,57 +150,6 @@ public class UserController {
         //YOUR CODE ENDS HERE
     }
 
-    @PutMapping("/addSkills/{id}")
-    public ResponseEntity addSkills(@PathVariable int id, @RequestBody UserPreference Skills,
-                          @RequestHeader("Authorization") String authHeader) {
-        //YOUR CODE STARTS HERE
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Missing or invalid token");
-        }
-
-
-
-        try {
-
-
-            userService.addSkills(Skills,id);
-
-            return ResponseEntity.ok("Success");
-
-        } catch (Exception e) {
-
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Invalid token");
-        }
-
-
-
-        //YOUR CODE ENDS HERE
-    }
-
-    @PutMapping("/updateSkills/{id}")
-    public ResponseEntity updateSkills(@PathVariable int id, @RequestBody UserPreference Skills,
-                                    @RequestHeader("Authorization") String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Missing or invalid token");
-        }
-
-        try {
-
-            userService.updateSkills(Skills,id);
-
-            return ResponseEntity.ok("Success");
-
-        } catch (Exception e) {
-
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Invalid token");
-        }
-
-    }
-
     @PostMapping("/addstatus/{id}")
     public ResponseEntity addStatus(@PathVariable int id, @RequestBody TrackedJob status,
                              @RequestHeader("Authorization") String authHeader) {
