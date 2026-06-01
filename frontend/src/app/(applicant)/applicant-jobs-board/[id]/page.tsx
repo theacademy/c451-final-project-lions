@@ -100,7 +100,7 @@ export default function ApplicantJobPage(jobId: number) {
                   </p>
                   <button className="btn btn-primary btn-block">
                     Apply now
-                  </button>{" "}
+                  </button>
                 </div>
               </div>
             </div>
