@@ -1,36 +1,129 @@
 package org.example.service;
 
 import org.example.model.Job;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 @Service
-public class JobServiceImpl implements  JobServiceInterface{
+public class JobServiceImpl implements JobServiceInterface {
 
+    @Autowired
+    private JdbcTemplate jdbc;
 
     @Override
     public Job createNewJob(Job job) {
-        return null;
+        if (job == null) {
+            return null;
+        }
+
+        String sql = "INSERT INTO jobs (greenhouse_job_id, company_id, title, location, description_html, description_text, absolute_url, seniority_level, skills_csv, posted_at, is_active, last_seen_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, TRUE, NOW()) ON DUPLICATE KEY UPDATE company_id = VALUES(company_id), title = VALUES(title), location = VALUES(location), description_html = VALUES(description_html), description_text = VALUES(description_text), absolute_url = VALUES(absolute_url), seniority_level = VALUES(seniority_level), skills_csv = VALUES(skills_csv), posted_at = VALUES(posted_at), is_active = TRUE, last_seen_at = NOW()";
+
+        KeyHolder holder = new GeneratedKeyHolder();
+        jdbc.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setObject(1, job.getGreenhouseJobId());
+            ps.setObject(2, job.getCompanyId());
+            ps.setString(3, job.getTitle());
+            ps.setString(4, job.getLocation());
+            ps.setString(5, job.getDescriptionHtml());
+            ps.setString(6, job.getDescriptionText());
+            ps.setString(7, job.getAbsoluteUrl());
+            ps.setString(8, job.getSeniorityLevel());
+            ps.setString(9, job.getSkillsCsv());
+            ps.setTimestamp(10, job.getPostedAt());
+            return ps;
+        }, holder);
+
+        if (job.getId() == null || job.getId() == 0) {
+            Number key = holder.getKey();
+            if (key != null) {
+                job.setId(key.longValue());
+            } else {
+                Job existingJob = findJobByGreenhouseId(job.getGreenhouseJobId());
+                if (existingJob != null) {
+                    job.setId(existingJob.getId());
+                }
+            }
+        }
+
+        return job;
     }
 
     @Override
     public List<Job> getAllJobs() {
-        return List.of();
+        String sql = "SELECT * FROM jobs";
+        return jdbc.query(sql, this::mapJob);
     }
 
     @Override
     public Job findJobById(int id) {
-        return null;
+        String sql = "SELECT * FROM jobs WHERE id = ?";
+        List<Job> jobs = jdbc.query(sql, new Object[]{id}, this::mapJob);
+        return jobs.isEmpty() ? null : jobs.get(0);
     }
 
     @Override
     public void updateJob(Job job) {
+        if (job == null || job.getId() == null) {
+            return;
+        }
 
+        String sql = "UPDATE jobs SET greenhouse_job_id = ?, company_id = ?, title = ?, location = ?, description_html = ?, description_text = ?, absolute_url = ?, seniority_level = ?, skills_csv = ?, posted_at = ?, is_active = ?, last_seen_at = NOW() WHERE id = ?";
+        jdbc.update(sql,
+                job.getGreenhouseJobId(),
+                job.getCompanyId(),
+                job.getTitle(),
+                job.getLocation(),
+                job.getDescriptionHtml(),
+                job.getDescriptionText(),
+                job.getAbsoluteUrl(),
+                job.getSeniorityLevel(),
+                job.getSkillsCsv(),
+                job.getPostedAt(),
+                job.isActive(),
+                job.getId());
     }
 
     @Override
     public void deleteJob(int id) {
+        String sql = "DELETE FROM jobs WHERE id = ?";
+        jdbc.update(sql, id);
+    }
 
+    private Job findJobByGreenhouseId(Long greenhouseJobId) {
+        if (greenhouseJobId == null) {
+            return null;
+        }
+        String sql = "SELECT * FROM jobs WHERE greenhouse_job_id = ?";
+        List<Job> jobs = jdbc.query(sql, new Object[]{greenhouseJobId}, this::mapJob);
+        return jobs.isEmpty() ? null : jobs.get(0);
+    }
+
+    private Job mapJob(ResultSet rs, int rowNum) throws SQLException {
+        Job job = new Job();
+        job.setId(rs.getLong("id"));
+        job.setGreenhouseJobId(rs.getLong("greenhouse_job_id"));
+        job.setCompanyId(rs.getLong("company_id"));
+        job.setTitle(rs.getString("title"));
+        job.setLocation(rs.getString("location"));
+        job.setDescriptionHtml(rs.getString("description_html"));
+        job.setDescriptionText(rs.getString("description_text"));
+        job.setAbsoluteUrl(rs.getString("absolute_url"));
+        job.setSeniorityLevel(rs.getString("seniority_level"));
+        job.setSkillsCsv(rs.getString("skills_csv"));
+        job.setPostedAt(rs.getTimestamp("posted_at"));
+        job.setActive(rs.getBoolean("is_active"));
+        job.setLastSeenAt(rs.getTimestamp("last_seen_at"));
+        job.setCreatedAt(rs.getTimestamp("created_at"));
+        return job;
     }
 }

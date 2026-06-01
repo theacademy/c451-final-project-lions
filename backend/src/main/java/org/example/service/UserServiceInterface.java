@@ -9,7 +9,7 @@ public interface UserServiceInterface {
 
     User createNewUser(User user);
 
-    List<User> getAllJobs();
+    List<User> getAllUsers();
 
     User findUserById(int id);
 
@@ -25,7 +25,10 @@ public interface UserServiceInterface {
 
     void deleteUser(int id);
 
-    public User findUserByUsername(String name);
+    User findUserByEmail(String email);
 
-    public String login(User user);
+
+    User findUserByUsername(String name);
+
+    String login(User user);
 }
