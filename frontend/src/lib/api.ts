@@ -15,11 +15,12 @@ export interface LoginPayload {
 }
 
 export interface Preferences {
-  skillsCsv?: string;
-  desiredLocation?: string;
-  remotePreference?: string;
-  jobType?: string;
-  yearsExperience?: number;
+  user_id?: number;
+  skills_csv?: string;
+  desired_location?: string;
+  remote_preference?: string;
+  job_type?: string;
+  years_experience?: number;
 }
 
 function authHeaders(): Record<string, string> {
@@ -34,9 +35,9 @@ export async function signup(payload: SignupPayload): Promise<unknown | null> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
+  if (res.status === 204) return null; // duplicate email, rejected
   if (!res.ok) throw new Error("Signup failed");
-  const text = await res.text();
-  return text ? JSON.parse(text) : null; // empty body => duplicate email
+  return res.json();
 }
 
 // POST /user/login — backend returns a BARE JWT STRING (not JSON), or empty on bad creds
@@ -46,9 +47,10 @@ export async function login(payload: LoginPayload): Promise<string | null> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
+  if (res.status === 204) return null; // invalid credentials
   if (!res.ok) throw new Error("Login request failed");
   const token = await res.text();
-  return token ? token : null; // empty => invalid credentials
+  return token || null;
 }
 
 // GET /user/preferences — null when none exist yet (HTTP 204) => first login

@@ -63,6 +63,17 @@ public class UserController {
         return ResponseEntity.ok(jwt);
     }
 
+    @PostMapping("/loginrecruiter")
+    // Method used to log a user in
+    // Send the user's login details to the service layer
+    public ResponseEntity<String> loginRecruiter(@RequestBody User user){
+        String jwt = userService.login(user);
+        if(jwt ==null ){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Not matching");
+        }
+        return ResponseEntity.ok(jwt);
+    }
+
     @PutMapping("/update/{id}")
     public ResponseEntity updateUser(@PathVariable int id, @RequestBody User user
             ,
@@ -137,57 +148,6 @@ public class UserController {
         }
 
         //YOUR CODE ENDS HERE
-    }
-
-    @PutMapping("/addSkills/{id}")
-    public ResponseEntity addSkills(@PathVariable int id, @RequestBody UserPreference Skills,
-                          @RequestHeader("Authorization") String authHeader) {
-        //YOUR CODE STARTS HERE
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Missing or invalid token");
-        }
-
-
-
-        try {
-
-
-            userService.addSkills(Skills,id);
-
-            return ResponseEntity.ok("Success");
-
-        } catch (Exception e) {
-
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Invalid token");
-        }
-
-
-
-        //YOUR CODE ENDS HERE
-    }
-
-    @PutMapping("/updateSkills/{id}")
-    public ResponseEntity updateSkills(@PathVariable int id, @RequestBody UserPreference Skills,
-                                    @RequestHeader("Authorization") String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Missing or invalid token");
-        }
-
-        try {
-
-            userService.updateSkills(Skills,id);
-
-            return ResponseEntity.ok("Success");
-
-        } catch (Exception e) {
-
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Invalid token");
-        }
-
     }
 
     @PostMapping("/addstatus/{id}")

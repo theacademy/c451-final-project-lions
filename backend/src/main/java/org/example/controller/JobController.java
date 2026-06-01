@@ -25,24 +25,27 @@ public class JobController {
     UserPreferenceDaoImpl userPreferenceDao;
 
     @GetMapping("/Jobs")
-    public ResponseEntity<List<Job>> getAllJobs(@RequestBody Long id){
-
+    public ResponseEntity<List<Job>> getAllJobs(@RequestBody Long id) {
         return ResponseEntity.ok(jobService.findJobByGreenhouseId(id));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getJobById(@PathVariable int id){
+    @GetMapping("/Job")
+    public ResponseEntity<List<Job>> getAllJobs() {
+        List<Job> jods = jobService.getAllJobs();
+        return ResponseEntity.ok(jods);
+    }
 
-        Job jod  = jobService.findJobById(id);
-        if(jod==null){
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getJobById(@PathVariable int id) {
+        Job jod = jobService.findJobById(id);
+        if (jod == null) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Not matching");
         }
         return ResponseEntity.ok(jod);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteJob(@PathVariable int id) {
-
+    public ResponseEntity<?> deleteJob(@PathVariable int id) {
         jobService.deleteJob(id);
         return ResponseEntity.ok("success");
     }
@@ -92,5 +95,4 @@ public class JobController {
         }
         return ResponseEntity.ok(jobs);
     }
-
 }

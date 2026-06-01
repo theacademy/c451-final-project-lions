@@ -29,7 +29,5 @@ public interface UserServiceInterface {
 
      TrackedJob addJobstatus( TrackedJob status);
 
-    User addSkills(UserPreference skills, int id);
 
-     User updateSkills(UserPreference skills, int id);
 }

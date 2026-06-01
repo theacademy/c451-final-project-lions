@@ -1,15 +1,12 @@
 "use client";
 import { useState } from "react";
-import { redirect } from "next/navigation";
-import { signup } from "@/src/lib/api";
+import { useRouter } from "next/navigation";          // replace the `redirect` import
+import { signup, login, savePreferences } from "@/src/lib/api";
+import { setToken } from "@/src/lib/auth";
+
 
 interface technicalSkill {
   tskill: string;
-  key: number;
-}
-
-interface softSkillType {
-  sskill: string;
   key: number;
 }
 
@@ -24,15 +21,18 @@ export default function UserSignUp() {
   const [techSkill, setTechSkill] = useState("");
   const [allTechSkills, setAllTechSkills] = useState<technicalSkill[]>([]);
 
-  const [softSkillCount, setSoftSkillCount] = useState(0);
-  const [softSkill, setSoftSkill] = useState("");
-  const [allSoftSkills, setAllSoftSkills] = useState<softSkillType[]>([]);
+  // years experience
+  const [yearsExperience, setYearsExperience] = useState("");
+
+  // job type
+  const [jobType, setJobType] = useState("");
+
 
   const [locationCount, setLocationCount] = useState(0);
   const [location, setLocation] = useState("");
   const [allLocations, setAllLocations] = useState<locationType[]>([]);
 
-  // const router = useRouter();
+  const router = useRouter();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -41,46 +41,51 @@ export default function UserSignUp() {
   const [submitting, setSubmitting] = useState(false);
 
   // Send data to database
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
 
-    const form = e.target;
-    const formData = new FormData(form);
+  const formData = new FormData(e.currentTarget);
+  const skillsCsv = allTechSkills.map((s) => s.tskill).join(",");
+  const locations = allLocations.map((l) => l.loc).join(",");
+  const workType = formData.getAll("work-type").join(",");
 
-    // Transforming each input into csv
-    const techSkills = allTechSkills.map((item) => item.tskill).join(",");
-    const softSkills = allSoftSkills.map((item) => item.sskill).join(",");
-    const locations = allLocations.map((item) => item.loc).join(",");
-    const workType = formData.getAll("work-type").join(",");
-
-    console.log("sending form!");
-    console.log("technical skills: ", techSkills);
-    console.log("soft skills: ", softSkills);
-    console.log("locations:", locations);
-    console.log("preferred work type:", workType);
-
-    // TODO: send to database
-    setError("");
-    setSubmitting(true);
-    try {
-      const created = await signup({
-        first_name: firstName,
-        last_name: lastName,
-        email_address: email,
-        password,
-      });
-      if (created === null) {
-        // empty response body => duplicate email (or rejected input)
-        setError("That email is already registered.");
-        return;
-      }
-      redirect("/login");
-    } catch {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setSubmitting(false);
+  setError("");
+  setSubmitting(true);
+  try {
+    const created = await signup({
+      first_name: firstName,
+      last_name: lastName,
+      email_address: email,
+      password,
+    });
+    if (created === null) {
+      setError("That email is already registered.");
+      return;
     }
-  };
+
+    const token = await login({ email_address: email, password });
+    if (!token) {
+      setError("Account created, but sign-in failed — please log in.");
+      router.push("/login");
+      return;
+    }
+    setToken(token);
+
+    await savePreferences({
+      skills_csv: skillsCsv,
+      desired_location: locations,
+      remote_preference: workType,
+      years_experience: yearsExperience ? Number(yearsExperience) : 0,
+      job_type: jobType || undefined,
+    });
+
+    router.push("/applicant-jobs-board");
+  } catch {
+    setError("Something went wrong. Please try again.");
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   const addTechSkill = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
@@ -98,22 +103,6 @@ export default function UserSignUp() {
     }
   };
 
-  const addSoftSkill = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      // Update skills if it's not blank and if it's valid
-      if (softSkill != "") {
-        const newSkill: softSkillType = {
-          sskill: softSkill,
-          key: softSkillCount,
-        };
-
-        setSoftSkillCount(softSkillCount + 1);
-
-        setAllSoftSkills([...allSoftSkills, newSkill]);
-        setSoftSkill("");
-      }
-    }
-  };
 
   const addLocation = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
@@ -144,13 +133,6 @@ export default function UserSignUp() {
 
     setAllTechSkills(allTechSkills.filter((s) => s.key != key));
     console.log(allTechSkills);
-  };
-
-  const deleteFromSoftSkills = (key: number) => {
-    console.log("trying to delete: ", key);
-
-    setAllSoftSkills(allSoftSkills.filter((s) => s.key != key));
-    console.log(allSoftSkills);
   };
 
   const deleteFromLocations = (key: number) => {
@@ -253,33 +235,6 @@ export default function UserSignUp() {
                 onChange={(e) => setTechSkill(e.target.value)}
               />
 
-              <label htmlFor="soft-skills">
-                Soft skills <span className="text-primary">*</span>
-              </label>
-              <div className="flex gap-3 flex-wrap">
-                {allSoftSkills.map((item) => (
-                  <span key={item.key} className="border rounded-2xl p-2 px-4">
-                    {item.sskill}
-                    <span
-                      onClick={() => deleteFromSoftSkills(item.key)}
-                      className="pl-2"
-                    >
-                      &times;
-                    </span>
-                  </span>
-                ))}
-              </div>
-              <input
-                type="text"
-                placeholder="Type here"
-                className="input"
-                id="soft-skills"
-                name="soft-skills"
-                onKeyDown={addSoftSkill}
-                value={softSkill}
-                onChange={(e) => setSoftSkill(e.target.value)}
-              />
-
               <label htmlFor="locations">
                 Preferred location(s) <span className="text-primary">*</span>
               </label>
@@ -307,6 +262,32 @@ export default function UserSignUp() {
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
               />
+
+              <label htmlFor="years-experience">Years of experience</label>
+              <input
+                type="number"
+                min="0"
+                placeholder="0"
+                className="input"
+                id="years-experience"
+                value={yearsExperience}
+                onChange={(e) => setYearsExperience(e.target.value)}
+              />
+
+              <label htmlFor="job-type">Job type</label>
+              <select
+                id="job-type"
+                className="select"
+                value={jobType}
+                onChange={(e) => setJobType(e.target.value)}
+              >
+                <option value="">Select…</option>
+                <option value="full-time">Full-time</option>
+                <option value="part-time">Part-time</option>
+                <option value="internship">Internship</option>
+                <option value="contract">Contract</option>
+              </select>
+
               <fieldset>
                 <legend className="fieldset-legend">
                   Preferred work style <span className="text-primary">*</span>

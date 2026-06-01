@@ -55,19 +55,13 @@ public class UserPreference {
         return skills_csv;
     }
 
-    public void setSkills_csv(List<String> skills_csv) {
-        this.skills_csv = skills_csv;
-    }
-
     public void setSkills_csv(String skills_csv) {
         this.skills_csv = Arrays.stream(skills_csv.split(","))
                 .map(String::trim)
                 .toList();
     }
+
     public String getSkills() {
-        return skills_csv == null ? "" : String.join(",", skills_csv);
+        return skills_csv == null ? null : String.join(",", skills_csv);
     }
-
-
-
 }
