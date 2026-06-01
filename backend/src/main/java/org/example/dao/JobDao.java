@@ -16,4 +16,6 @@ public interface JobDao {
 
     void deleteJob(int id);
 
+    public List<Job> getAllJobs(int page);
+
 }

@@ -67,8 +67,8 @@ public class JobServiceImpl implements JobServiceInterface {
     @Override
     public List<Job> getAllJobs() {
 
-        String sql = "SELECT * FROM jobs";
-        return jdbc.query(sql, this::mapJob);
+
+        return JobDao.getAllJobs(1);
     }
 
     @Override

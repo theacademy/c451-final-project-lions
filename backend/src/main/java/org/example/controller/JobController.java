@@ -24,6 +24,12 @@ public class JobController {
         return ResponseEntity.ok(jobService.findJobByGreenhouseId(id));
     }
 
+    @GetMapping("/Job")
+    public ResponseEntity<List<Job>> getAllJobs(){
+
+        return ResponseEntity.ok(jobService.getAllJobs());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getJobById(@PathVariable int id){
 
