@@ -24,4 +24,8 @@ public interface UserServiceInterface {
     User findUserByEmail(String email);
 
     String login(User user);
+
+    TrackedJob updateJobstatus(int id, TrackedJob status);
+
+     TrackedJob addJobstatus( TrackedJob status);
 }

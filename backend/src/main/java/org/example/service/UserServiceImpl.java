@@ -1,6 +1,7 @@
 package org.example.service;
 
 import org.example.dao.UserDao;
+import org.example.model.TrackedJob;
 import org.example.model.User;
 import org.example.model.UserPreference;
 import org.example.utils.JwtUtil;
@@ -56,6 +57,23 @@ public class UserServiceImpl implements UserServiceInterface {
         userDao.editUser(user);
     }
 
+    @Override
+    public TrackedJob updateJobstatus(int id, TrackedJob status) {
+        if (status == null ) {
+            return null;
+        }
+        trackedJobDao.updateTrackedJob(status);
+        return status;
+    }
+
+    @Override
+    public TrackedJob addJobstatus( TrackedJob status) {
+        if (status == null ) {
+            return null;
+        }
+        status = trackedJobDao.createNewTrackedJob(status);
+        return status;
+    }
     @Override
     public void editPassword(String password, int id) {
         if (password == null) {
