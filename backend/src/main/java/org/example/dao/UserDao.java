@@ -14,7 +14,7 @@ public interface UserDao {
 
     User findUserByEmail(String email);
 
-    void editUser(User user);
+    User editUser(User user);
 
     void editPassword(String passwordHash, int id);
 

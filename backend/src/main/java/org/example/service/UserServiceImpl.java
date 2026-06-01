@@ -1,6 +1,7 @@
 package org.example.service;
 
-import org.example.dao.UserDao;
+import org.example.dao.*;
+import org.example.model.TrackedJob;
 import org.example.model.User;
 import org.example.model.UserPreference;
 import org.example.utils.JwtUtil;
@@ -19,6 +20,13 @@ public class UserServiceImpl implements UserServiceInterface {
     private UserDao userDao;
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserPreferenceDaoImpl userPreferenceDao;
+
+    @Autowired
+    private TrackedJobDaoImpl trackedJobDao;
+
     @Override
     public User createNewUser(User user) {
 
@@ -52,17 +60,67 @@ public class UserServiceImpl implements UserServiceInterface {
     }
 
     @Override
-    public void editUser(User user) {
-        userDao.editUser(user);
+    public User editUser(User user) {
+        return userDao.editUser(user);
+    }
+
+    @Override
+    public TrackedJob updateJobstatus(int id, TrackedJob status) {
+        if (status == null ) {
+            return null;
+        }
+        trackedJobDao.updateTrackedJob(status);
+        return status;
+    }
+
+    @Override
+    public TrackedJob addJobstatus( TrackedJob status) {
+        if (status == null ) {
+            return null;
+        }
+        status = trackedJobDao.createNewTrackedJob(status);
+        return status;
+    }
+
+    @Override
+    public User addSkills(UserPreference skills, int id) {
+        if (skills == null ) {
+            return null;
+        }
+
+        User user = findUserById(id);
+        if (user == null) {
+            return null;
+        }
+
+        userPreferenceDao.createNewUserPreference(skills);
+        //saveOrUpdatePreferences(id, mergedSkills);
+        return user;
+    }
+
+    @Override
+    public User updateSkills(UserPreference skills, int id) {
+        if (skills == null ) {
+            return null;
+        }
+
+        User user = findUserById(id);
+        if (user == null) {
+            return null;
+        }
+
+        userPreferenceDao.updateUserPreference(skills);
+        //saveOrUpdatePreferences(id, mergedSkills);
+        return user;
     }
 
     @Override
     public void editPassword(String password, int id) {
         if (password == null) {
-            return;
+            return ;
         }
         // Hash the new password before it hits the DB
-        userDao.editPassword(passwordEncoder.encode(password), id);
+       userDao.editPassword(passwordEncoder.encode(password), id);
     }
 
     @Override

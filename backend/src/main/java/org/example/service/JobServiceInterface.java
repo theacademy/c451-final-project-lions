@@ -1,6 +1,7 @@
 package org.example.service;
 
 import org.example.model.Job;
+import org.example.model.Search;
 
 import java.util.List;
 
@@ -14,4 +15,8 @@ public interface JobServiceInterface {
     void updateJob(Job job);
 
     void deleteJob(int id);
+
+    List<Job> searchJob(Search search);
+
+
 }

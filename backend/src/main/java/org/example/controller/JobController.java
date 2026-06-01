@@ -1,6 +1,7 @@
 package org.example.controller;
 
 import org.example.model.Job;
+import org.example.model.Search;
 import org.example.service.JobServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,8 +41,8 @@ public class JobController {
         return ResponseEntity.ok("success");
     }
 
-    @DeleteMapping("/refresh")
-    public void refreshJob(@PathVariable int id) {
+    @GetMapping("/Search")
+    public void refreshJob(@PathVariable int id, @RequestBody Search search) {
         //YOUR CODE STARTS HERE
 
 

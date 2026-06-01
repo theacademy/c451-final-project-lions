@@ -3,6 +3,7 @@ package org.example.service;
 import org.example.dao.JobDao;
 import org.example.dao.JobDaoImpl;
 import org.example.model.Job;
+import org.example.model.Search;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -101,6 +102,11 @@ public class JobServiceImpl implements JobServiceInterface {
     @Override
     public void deleteJob(int id) {
        JobDao.deleteJob(id);
+    }
+
+    @Override
+    public List<Job> searchJob(Search search){
+        return JobDao.searchJob(search);
     }
 
     public List<Job> findJobByGreenhouseId(Long greenhouseJobId) {
