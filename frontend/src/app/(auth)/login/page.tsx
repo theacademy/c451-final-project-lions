@@ -1,4 +1,7 @@
 "use client";
+import React from "react";
+
+import Link from "next/link";
 import { useState } from "react";
 
 interface loginInfo {
@@ -7,13 +10,13 @@ interface loginInfo {
 }
 
 export default function Login() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log("Clicked on login");
+    // TODO: Redirect user to applicant dashboard or recruiter dashboard based on their account type
   };
 
   return (
@@ -23,18 +26,27 @@ export default function Login() {
           <form onSubmit={handleSubmit} className="flex flex-col">
             <label htmlFor="email">Email</label>
             <input
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                console.log(email);
+              }}
               type="text"
               placeholder="Type here"
               className="input"
               id="email"
+              required
             />
 
             <label htmlFor="password">Password</label>
             <input
-              type="text"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              type="password"
               placeholder="Type here"
               className="input"
               id="password"
+              required
             />
             <button className="btn btn-neutral" type="submit">
               Login
