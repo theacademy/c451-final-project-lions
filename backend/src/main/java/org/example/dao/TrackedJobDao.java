@@ -10,11 +10,11 @@ public interface TrackedJobDao {
     TrackedJob createNewTrackedJob(TrackedJob trackedJob );
 
 
-    List<TrackedJob> findTrackedJobById(int id);
+    TrackedJob findTrackedJobById(int id);
 
     void updateTrackedJob(TrackedJob trackedJob);
 
     void deleteTrackedJob(int id);
 
-    TrackedJob findTrackedJobByjobId(Long id);
+    List<TrackedJob> findTrackedJobByjobId(Long id);
 }
