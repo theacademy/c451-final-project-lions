@@ -7,6 +7,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public class TrackedJobDaoImpl implements TrackedJobDao{
 
@@ -39,10 +41,10 @@ public class TrackedJobDaoImpl implements TrackedJobDao{
     }
 
     @Override
-    public TrackedJob findTrackedJobByjobId(Long id) {
+    public List<TrackedJob> findTrackedJobByjobId(Long id) {
         try {
             final String SELECT_TRACKED_BY_ID = "SELECT * FROM tracked_jobs WHERE job_id = ?";
-            return jdbc.queryForObject(SELECT_TRACKED_BY_ID, new trackedJobsMapper(), id);
+            return jdbc.query(SELECT_TRACKED_BY_ID, new trackedJobsMapper(), id);
         } catch(DataAccessException ex) {
             return null;
         }

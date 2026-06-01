@@ -2,13 +2,15 @@ package org.example.dao;
 
 import org.example.model.TrackedJob;
 
+import java.util.List;
+
 public interface TrackedJobDao {
 
 
     TrackedJob createNewTrackedJob(TrackedJob trackedJob );
 
 
-    TrackedJob findTrackedJobById(int id);
+    List<TrackedJob> findTrackedJobById(int id);
 
     void updateTrackedJob(TrackedJob trackedJob);
 
