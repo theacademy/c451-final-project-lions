@@ -33,7 +33,7 @@ public class IngestService {
      * Pulls all jobs from each seeded company, upserts them into the jobs table,
      * then deactivates any jobs that didn't appear in this sync.
      */
-    @Scheduled(fixedRate = 3 * 60 * 60 * 1000, initialDelay =  5000)  // 3 hours in milliseconds
+    @Scheduled(fixedRate = 3 * 60 * 60 * 1000)  // 3 hours in milliseconds
     public void syncAllCompanies() {
         Timestamp syncStart = jdbc.queryForObject("SELECT NOW()", Timestamp.class);
         System.out.println("=== Starting ingestion sync at " + syncStart + " ===");

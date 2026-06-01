@@ -103,8 +103,10 @@ public class UserController {
     }
 
     @PutMapping("/updatePass/{id}")
-    public ResponseEntity updatePass(@PathVariable int id, @RequestBody String password,String user,
-                           @RequestHeader("Authorization") String authHeader
+    public ResponseEntity updatePass(@PathVariable int id,
+                                     @RequestBody String password,
+                                     @RequestParam String user,
+                                     @RequestHeader("Authorization") String authHeader
     ) {
         //YOUR CODE STARTS HERE
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -125,8 +127,7 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body("Access denied");
             }
-            userService.editPassword(password,id);
-
+            userService.editPassword(password, id); // hashed in the service
             return ResponseEntity.ok("Success");
 
         } catch (Exception e) {

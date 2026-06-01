@@ -19,23 +19,9 @@ public interface UserServiceInterface {
 
     String editPassword(String password, int id);
 
-    User addSkills(UserPreference skills, int id);
-
-    User updateSkills(UserPreference skills, int id);
-
-    void addJob(Job job, int id);
-
-    TrackedJob updateJobstatus(int id, TrackedJob status);
-
-    TrackedJob addJobstatus( TrackedJob status);
-
-
     void deleteUser(int id);
 
     User findUserByEmail(String email);
-
-
-    User findUserByUsername(String name);
 
     String login(User user);
 }
