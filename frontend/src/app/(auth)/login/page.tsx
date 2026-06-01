@@ -1,4 +1,7 @@
 "use client";
+import React from "react";
+
+import Link from "next/link";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -12,7 +15,7 @@ export default function Login() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     setSubmitting(true);
@@ -41,23 +44,25 @@ export default function Login() {
           <form onSubmit={handleSubmit} className="flex flex-col">
             <label htmlFor="email">Email</label>
             <input
-              type="email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
+              type="text"
               placeholder="Type here"
               className="input"
               id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
               required
             />
 
             <label htmlFor="password">Password</label>
             <input
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               type="password"
               placeholder="Type here"
               className="input"
               id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
               required
             />
 

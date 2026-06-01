@@ -1,3 +1,3 @@
 export default function ApplicantDashboard() {
-  return <div>Placeholder for ApplicantDashboard</div>;
+  return <main className="grow">Placeholder for ApplicantDashboard</main>;
 }
