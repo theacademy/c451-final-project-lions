@@ -70,7 +70,7 @@ public class UserDaoImpl implements UserDao{
     }
 
     @Override
-    public void editUser(User user) {
+    public User editUser(User user) {
         String sql = """
             UPDATE users
             SET email_address = ?, first_name = ?, last_name = ?
@@ -81,6 +81,7 @@ public class UserDaoImpl implements UserDao{
                 user.getFirst_name(),
                 user.getLast_name(),
                 user.getId());
+        return user;
     }
 
     @Override

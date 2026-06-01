@@ -17,7 +17,7 @@ public interface UserServiceInterface {
 
     User editUser(User user);
 
-    String editPassword(String password, int id);
+    void editPassword(String password, int id);
 
     void deleteUser(int id);
 
@@ -28,4 +28,8 @@ public interface UserServiceInterface {
     TrackedJob updateJobstatus(int id, TrackedJob status);
 
      TrackedJob addJobstatus( TrackedJob status);
+
+    User addSkills(UserPreference skills, int id);
+
+     User updateSkills(UserPreference skills, int id);
 }
