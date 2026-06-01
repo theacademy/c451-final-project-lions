@@ -1,6 +1,7 @@
 package org.example.dao;
 
 import org.example.model.Job;
+import org.example.model.Search;
 
 import java.util.List;
 
@@ -11,7 +12,7 @@ public interface JobDao {
 
     Job findJobById(int id);
 
-    void updateJob(Job job);
+    List<Job> searchJob(Search search);
 
     void deleteJob(int id);
 
