@@ -1,62 +1,103 @@
 "use client";
 
-import Link from "next/link";
-const handleSubmit = async (e: any) => {
-  e.preventDefault();
-};
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { signup } from "@/src/lib/api";
 
 export default function UserSignUp() {
+  const router = useRouter();
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSubmitting(true);
+    try {
+      const created = await signup({
+        first_name: firstName,
+        last_name: lastName,
+        email_address: email,
+        password,
+      });
+      if (created === null) {
+        // empty response body => duplicate email (or rejected input)
+        setError("That email is already registered.");
+        return;
+      }
+      router.push("/login");
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <>
       <h1 className="text-4xl font-bold">
-        Before getting started, tell us a bit about yourself.
+        Join us today
       </h1>
       <div className="flex h-screen items-center justify-center">
         <div className="card w-96 bg-base-100 card-md shadow-sm">
           <div className="card-body">
             <form onSubmit={handleSubmit} className="flex flex-col">
-              <label htmlFor="tech-skills">Company</label>
+              <label htmlFor="firstName">First name</label>
               <input
                 type="text"
-                placeholder="Add skill"
+                placeholder="Type here"
                 className="input"
-                id="tech-skills"
+                id="firstName"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
               />
 
-              <label htmlFor="soft-skills">Company</label>
+              <label htmlFor="lastName">Last name</label>
               <input
                 type="text"
-                placeholder="Add skill"
+                placeholder="Type here"
                 className="input"
-                id="soft-skills"
+                id="lastName"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required
               />
 
-              <label htmlFor="locations">Company</label>
+              <label htmlFor="email">Email</label>
               <input
-                type="text"
-                placeholder="Add location"
+                type="email"
+                placeholder="Type here"
                 className="input"
-                id="locations"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
               />
 
-              <legend className="fieldset-legend">Preferred work style</legend>
-              <label className="label">
-                <input type="checkbox" className="checkbox" />
-                In-person
-              </label>
+              <label htmlFor="password">Password</label>
+              <input
+                type="password"
+                placeholder="Type here"
+                className="input"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
 
-              <label className="label">
-                <input type="checkbox" className="checkbox" />
-                Remote
-              </label>
+              {error && <p className="text-error text-sm mt-2">{error}</p>}
 
-              <label className="label">
-                <input type="checkbox" className="checkbox" />
-                Hybrid
-              </label>
-
-              <button className="btn btn-neutral" type="submit">
-                Continue
+              <button
+                className="btn btn-neutral mt-2"
+                type="submit"
+                disabled={submitting}
+              >
+                {submitting ? "Creating..." : "Continue"}
               </button>
             </form>
           </div>
