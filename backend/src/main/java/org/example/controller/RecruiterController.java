@@ -1,6 +1,7 @@
 package org.example.controller;
 
 import org.example.model.User;
+import org.example.service.RecruiterServiceImpl;
 import org.example.service.UserServiceImpl;
 import org.example.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 public class RecruiterController {
     @Autowired
-    UserServiceImpl userService;
+    RecruiterServiceImpl recruiterService;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -18,7 +19,7 @@ public class RecruiterController {
     // Method used to log a user in
     // Send the user's login details to the service layer
     public ResponseEntity<String> loginRecruiter(@RequestBody User user){
-        String jwt = userService.login(user);
+        String jwt = recruiterService.login(user);
         if(jwt ==null ){
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Not matching");
         }
@@ -49,7 +50,7 @@ public class RecruiterController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body("Access denied");
             }
-            userService.editPassword(password, id); // hashed in the service
+            recruiterService.editPassword(password, id); // hashed in the service
             return ResponseEntity.ok("Success");
 
         } catch (Exception e) {
@@ -66,7 +67,22 @@ public class RecruiterController {
                                      @RequestBody Long jobId,
                                      @RequestHeader("Authorization") String authHeader)
     {
-    return new ResponseEntity<>("a");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Missing or invalid token");
+        }
+
+          try {
+
+
+            return ResponseEntity.ok(recruiterService.getUserJobs(jobId));
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid token");
+        }
+
     }
 
 

@@ -13,4 +13,6 @@ public interface TrackedJobDao {
     void updateTrackedJob(TrackedJob trackedJob);
 
     void deleteTrackedJob(int id);
+
+    TrackedJob findTrackedJobByjobId(Long id);
 }

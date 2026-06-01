@@ -1,10 +1,17 @@
 package org.example.service;
 
+import org.example.dao.RecruiterDao;
+import org.example.dao.RecruiterDaoImpl;
+import org.example.dao.TrackedJobDaoImpl;
 import org.example.dao.UserDao;
+import org.example.model.Recrutiter;
+import org.example.model.TrackedJob;
 import org.example.model.User;
 import org.example.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.List;
 
 import static org.apache.logging.log4j.util.Strings.isBlank;
 
@@ -14,9 +21,13 @@ public class RecruiterServiceImpl implements RecruiterServiceInterface {
     private JwtUtil jwtUtil;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private RecruiterDaoImpl recruiterDao;
+    @Autowired
+    private TrackedJobDaoImpl trackedJobDao;
 
     @Override
-    public User findUserById(int id) {
+    public User findRecruiterById(int id) {
         return null;
     }
 
@@ -28,7 +39,12 @@ public class RecruiterServiceImpl implements RecruiterServiceInterface {
             return ;
         }
         // Hash the new password before it hits the DB
-        userDao.editPassword(passwordEncoder.encode(password), id);
+          recruiterDao.editRecrutiter(passwordEncoder.encode(password), id);
+    }
+
+    @Override
+    public List<TrackedJob> getUserJobs(Long id) {
+        return trackedJobDao.findTrackedJobByjobId(id);
     }
 
     @Override
@@ -39,14 +55,14 @@ public class RecruiterServiceImpl implements RecruiterServiceInterface {
             return null;
         }
 
-      //  User userCheck = userDao.findUserByEmail(user.getEmail_address());
+        Recrutiter userCheck = recruiterDao.findRecrutiterById(user.getId());
 
-//        if (userCheck != null &&
-//                userCheck.getPassword() != null &&
-//                passwordEncoder.matches(user.getPassword(), userCheck.getPassword())) {
-//            // Token subject = the real user's email
-//            return jwtUtil.generateToken(userCheck.getEmail_address());
-//        }
+        if (userCheck != null &&
+                userCheck.getPassword() != null &&
+                passwordEncoder.matches(user.getPassword(), userCheck.getPassword())) {
+            // Token subject = the real user's email
+            return jwtUtil.generateToken(userCheck.getEmail_address());
+        }
         return null;
     }
     private boolean isBlank(String s) {
