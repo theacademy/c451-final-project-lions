@@ -83,38 +83,6 @@ public class UserServiceImpl implements UserServiceInterface {
     }
 
     @Override
-    public User addSkills(UserPreference skills, int id) {
-        if (skills == null ) {
-            return null;
-        }
-
-        User user = findUserById(id);
-        if (user == null) {
-            return null;
-        }
-
-        userPreferenceDao.createNewUserPreference(skills);
-        //saveOrUpdatePreferences(id, mergedSkills);
-        return user;
-    }
-
-    @Override
-    public User updateSkills(UserPreference skills, int id) {
-        if (skills == null ) {
-            return null;
-        }
-
-        User user = findUserById(id);
-        if (user == null) {
-            return null;
-        }
-
-        userPreferenceDao.updateUserPreference(skills);
-        //saveOrUpdatePreferences(id, mergedSkills);
-        return user;
-    }
-
-    @Override
     public void editPassword(String password, int id) {
         if (password == null) {
             return ;
