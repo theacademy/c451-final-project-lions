@@ -13,7 +13,7 @@ public class Job {
     private String seniorityLevel;
     private String skillsCsv;
     private Timestamp postedAt;
-    private boolean isActive;
+    private boolean is_active;
     private Timestamp lastSeenAt;
     private Timestamp createdAt;
 
@@ -111,11 +111,11 @@ public class Job {
     }
 
     public boolean isActive() {
-        return isActive;
+        return is_active;
     }
 
     public void setActive(boolean active) {
-        isActive = active;
+        is_active = active;
     }
 
     public Timestamp getLastSeenAt() {

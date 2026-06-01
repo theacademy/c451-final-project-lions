@@ -63,6 +63,17 @@ public class UserController {
         return ResponseEntity.ok(jwt);
     }
 
+    @PostMapping("/loginrecruiter")
+    // Method used to log a user in
+    // Send the user's login details to the service layer
+    public ResponseEntity<String> loginRecruiter(@RequestBody User user){
+        String jwt = userService.login(user);
+        if(jwt ==null ){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Not matching");
+        }
+        return ResponseEntity.ok(jwt);
+    }
+
     @PutMapping("/update/{id}")
     public ResponseEntity updateUser(@PathVariable int id, @RequestBody User user
             ,
