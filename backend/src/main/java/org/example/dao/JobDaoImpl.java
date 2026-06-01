@@ -19,7 +19,7 @@ public class JobDaoImpl  implements JobDao{
     }
 
     @Override
-    public List<Job> getAllJobs(int company_id, int page) {
+    public List<Job> getAllJobs(Long company_id, int page) {
         int pageSize = 20;
         int offset = page * pageSize;
         try {

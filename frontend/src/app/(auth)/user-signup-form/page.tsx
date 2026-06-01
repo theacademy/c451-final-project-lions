@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
-
-import Link from "next/link";
+import { redirect } from "next/navigation";
 
 interface technicalSkill {
   tskill: string;
@@ -32,6 +31,14 @@ export default function UserSignUp() {
   const [location, setLocation] = useState("");
   const [allLocations, setAllLocations] = useState<locationType[]>([]);
 
+  // const router = useRouter();
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
   // Send data to database
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -52,6 +59,26 @@ export default function UserSignUp() {
     console.log("preferred work type:", workType);
 
     // TODO: send to database
+    setError("");
+    setSubmitting(true);
+    try {
+      const created = await signup({
+        first_name: firstName,
+        last_name: lastName,
+        email_address: email,
+        password,
+      });
+      if (created === null) {
+        // empty response body => duplicate email (or rejected input)
+        setError("That email is already registered.");
+        return;
+      }
+      redirect("/login");
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const addTechSkill = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -64,7 +91,6 @@ export default function UserSignUp() {
         };
 
         setTechSkillCount(techSkillCount + 1);
-
         setAllTechSkills([...allTechSkills, newSkill]);
         setTechSkill("");
       }
@@ -135,9 +161,7 @@ export default function UserSignUp() {
 
   return (
     <>
-      <h1 className="text-4xl font-bold">
-        Before getting started, tell us a bit about yourself.
-      </h1>
+      <h1 className="text-4xl font-bold">Join us today</h1>
       <div className="flex h-screen items-center justify-center">
         <div className="card w-96 bg-base-100 card-md shadow-sm">
           <div className="card-body">
@@ -146,10 +170,63 @@ export default function UserSignUp() {
               onKeyDown={checkKeyDown}
               className="flex flex-col gap-3"
             >
+              {/* User basic information */}
+              <label htmlFor="firstName">
+                First name <span className="text-primary">*</span>
+              </label>
+              <input
+                type="text"
+                placeholder="Type here"
+                className="input"
+                id="firstName"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
+              />
+
+              <label htmlFor="lastName">
+                Last name <span className="text-primary">*</span>
+              </label>
+              <input
+                type="text"
+                placeholder="Type here"
+                className="input"
+                id="lastName"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required
+              />
+
+              <label htmlFor="email">
+                Email <span className="text-primary">*</span>
+              </label>
+              <input
+                type="email"
+                placeholder="Type here"
+                className="input"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <label htmlFor="password">
+                Password <span className="text-primary">*</span>
+              </label>
+              <input
+                type="password"
+                placeholder="Type here"
+                className="input"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              {error && <p className="text-error text-sm mt-2">{error}</p>}
+
+              {/* User tech preferences */}
               <label htmlFor="tech-skills">
                 Technical skills <span className="text-primary">*</span>
               </label>
-
               <div className="flex gap-3 flex-wrap">
                 {allTechSkills.map((item) => (
                   <span key={item.key} className="border rounded-2xl p-2 px-4">
@@ -178,7 +255,6 @@ export default function UserSignUp() {
               <label htmlFor="soft-skills">
                 Soft skills <span className="text-primary">*</span>
               </label>
-
               <div className="flex gap-3 flex-wrap">
                 {allSoftSkills.map((item) => (
                   <span key={item.key} className="border rounded-2xl p-2 px-4">
@@ -192,10 +268,9 @@ export default function UserSignUp() {
                   </span>
                 ))}
               </div>
-
               <input
                 type="text"
-                placeholder="Add skill"
+                placeholder="Type here"
                 className="input"
                 id="soft-skills"
                 name="soft-skills"
@@ -207,7 +282,6 @@ export default function UserSignUp() {
               <label htmlFor="locations">
                 Preferred location(s) <span className="text-primary">*</span>
               </label>
-
               <div className="flex gap-3 flex-wrap">
                 {allLocations.map((item) => (
                   <span key={item.key} className="border rounded-2xl p-2 px-4">
@@ -232,7 +306,6 @@ export default function UserSignUp() {
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
               />
-
               <fieldset>
                 <legend className="fieldset-legend">
                   Preferred work style <span className="text-primary">*</span>
@@ -267,14 +340,14 @@ export default function UserSignUp() {
                   Hybrid
                 </label>
               </fieldset>
-              {/* <button className="btn btn-neutral" type="submit">
-                Continue
-              </button> */}
-              <Link href="/applicant-jobs-board">
-                <button className="btn btn-neutral" type="submit">
-                  Continue
-                </button>
-              </Link>
+
+              <button
+                className="btn btn-neutral mt-2"
+                type="submit"
+                disabled={submitting}
+              >
+                {submitting ? "Creating..." : "Continue"}
+              </button>
             </form>
           </div>
         </div>

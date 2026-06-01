@@ -5,12 +5,12 @@ import org.example.model.TrackedJob;
 public interface TrackedJobDao {
 
 
-    TrackedJob createNewUserPreference(TrackedJob trackedJob );
+    TrackedJob createNewTrackedJob(TrackedJob trackedJob );
 
 
-    TrackedJob findUserPreferenceById(int id);
+    TrackedJob findTrackedJobById(int id);
 
-    void updateUserPreference(TrackedJob trackedJob);
+    void updateTrackedJob(TrackedJob trackedJob);
 
-    void deleteUserPreference(int id);
+    void deleteTrackedJob(int id);
 }
