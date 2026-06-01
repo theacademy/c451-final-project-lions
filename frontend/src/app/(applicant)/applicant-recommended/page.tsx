@@ -1,3 +1,3 @@
 export default function ApplicantRecommended() {
-  return <div>Placeholder for ApplicantRecommended</div>;
+  return <div className="grow">Placeholder for ApplicantRecommended</div>;
 }
