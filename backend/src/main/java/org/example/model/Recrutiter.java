@@ -7,7 +7,8 @@ public class Recrutiter {
     private String email_address;
     private String password;
     int id;
-
+    private String first_name;
+    private Long companyId;
     public Long getCompanyId() {
         return companyId;
     }
@@ -16,8 +17,7 @@ public class Recrutiter {
         this.companyId = companyId;
     }
 
-    private String first_name;
-    private Long companyId;
+
     public int getId() {
         return id;
     }
