@@ -22,6 +22,7 @@ CREATE TABLE user_preferences (
     user_id BIGINT PRIMARY KEY,
     years_experience INT,
     desired_location VARCHAR(255),
+    desired_role VARCHAR(255),
     remote_preference VARCHAR(20),
     job_type VARCHAR(20),
     skills_csv VARCHAR(500),

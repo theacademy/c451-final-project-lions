@@ -15,12 +15,13 @@ public class UserPreferenceDaoImpl implements UserPreferenceDao{
 
     @Override
     public UserPreference createNewUserPreference(UserPreference preference) {
-        final String INSERT_PREFERENCE = "INSERT INTO user_preferences( user_id, years_experience, desired_location, remote_preference, job_type, skills_csv) "
-                + "VALUES(?,?,?,?,?,?)";
+        final String INSERT_PREFERENCE = "INSERT INTO user_preferences( user_id, years_experience, desired_location, desired_role, remote_preference, job_type, skills_csv) "
+                + "VALUES(?,?,?,?,?,?,?)";
         jdbc.update(INSERT_PREFERENCE,
                 preference.getUser_id(),
                 preference.getYears_experience(),
                 preference.getDesired_location(),
+                preference.getDesired_role(),
                 preference.getRemote_preference(),
                 preference.getJob_type(),
                 preference.getSkills());
@@ -40,11 +41,12 @@ public class UserPreferenceDaoImpl implements UserPreferenceDao{
 
     @Override
     public void updateUserPreference(UserPreference preference) {
-        final String UPDATE_PREFERENCE= "UPDATE user_preferences SET years_experience = ?, desired_location = ?, remote_preference = ?, job_type = ?, skills_csv = ? "
+        final String UPDATE_PREFERENCE= "UPDATE user_preferences SET years_experience = ?, desired_location = ?, desired_role = ?, remote_preference = ?, job_type = ?, skills_csv = ? "
                 + "WHERE user_id = ?";
         jdbc.update(UPDATE_PREFERENCE,
                 preference.getYears_experience(),
                 preference.getDesired_location(),
+                preference.getDesired_role(),
                 preference.getRemote_preference(),
                 preference.getJob_type(),
                 preference.getSkills(),
