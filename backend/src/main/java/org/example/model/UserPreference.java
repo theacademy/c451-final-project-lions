@@ -65,8 +65,13 @@ public class UserPreference {
     }
 
     public void setSkills_csv(String skills_csv) {
+        if (skills_csv == null || skills_csv.isBlank()) {
+            this.skills_csv = List.of();
+            return;
+        }
         this.skills_csv = Arrays.stream(skills_csv.split(","))
                 .map(String::trim)
+                .filter(s -> !s.isBlank())
                 .toList();
     }
 

@@ -20,6 +20,8 @@ public interface JobServiceInterface {
 
     List<Job> getBoardJobs(String role, String location, String seniority, int page);
 
+    Job getJobApplicantMatch(int jobId, int userId);
+
     public List<Job> getCompanyJobs(Long id) ;
 
 }

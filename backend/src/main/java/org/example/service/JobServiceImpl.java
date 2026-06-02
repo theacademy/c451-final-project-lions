@@ -2,8 +2,10 @@ package org.example.service;
 
 import org.example.dao.JobDao;
 import org.example.dao.JobDaoImpl;
+import org.example.dao.UserPreferenceDaoImpl;
 import org.example.model.Job;
 import org.example.model.Search;
+import org.example.model.UserPreference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -14,7 +16,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class JobServiceImpl implements JobServiceInterface {
@@ -24,6 +30,9 @@ public class JobServiceImpl implements JobServiceInterface {
 
     @Autowired
     private JobDaoImpl JobDao;
+
+    @Autowired
+    private UserPreferenceDaoImpl userPreferenceDao;
 
     @Override
     public Job createNewJob(Job job) {
@@ -78,6 +87,28 @@ public class JobServiceImpl implements JobServiceInterface {
     }
 
     @Override
+    public Job getJobApplicantMatch(int jobId, int userId) {
+        if (jobId <= 0 || userId <= 0) {
+            return null;
+        }
+
+        Job job = findJobById(jobId);
+        if (job == null) {
+            return null;
+        }
+
+        UserPreference preference = userPreferenceDao.findUserPreferenceById(userId);
+        if (preference == null || preference.getSkills() == null || preference.getSkills().isBlank()) {
+            job.setMatchPercent(0);
+            return job;
+        }
+
+        int matchPercent = calculateMatchPercent(normalizeSkills(job.getSkillsCsv()), normalizeSkills(preference.getSkills_csv()));
+        job.setMatchPercent(matchPercent);
+        return job;
+    }
+
+    @Override
     public List<Job> getCompanyJobs(Long id) {
         return JobDao.findJobByCompanyId(id);
     }
@@ -126,6 +157,42 @@ public class JobServiceImpl implements JobServiceInterface {
 
         List<Job> jobs = JobDao.getAllJobs(greenhouseJobId, 2);
         return jobs.isEmpty() ? null : jobs;
+    }
+
+    private Set<String> normalizeSkills(String skillsCsv) {
+        if (skillsCsv == null || skillsCsv.isBlank()) {
+            return new HashSet<>();
+        }
+        return Arrays.stream(skillsCsv.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isBlank())
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<String> normalizeSkills(List<String> skills) {
+        if (skills == null || skills.isEmpty()) {
+            return new HashSet<>();
+        }
+        return skills.stream()
+                .filter(s -> s != null && !s.isBlank())
+                .map(String::trim)
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
+    }
+
+    private int calculateMatchPercent(Set<String> jobSkills, Set<String> userSkills) {
+        if (jobSkills.isEmpty() || userSkills.isEmpty()) {
+            return 0;
+        }
+
+        Set<String> intersection = new HashSet<>(jobSkills);
+        intersection.retainAll(userSkills);
+        if (intersection.isEmpty()) {
+            return 0;
+        }
+
+        return (int) Math.round(100.0 * intersection.size() / jobSkills.size());
     }
 
     private Job mapJob(ResultSet rs, int rowNum) throws SQLException {
