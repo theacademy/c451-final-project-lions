@@ -121,6 +121,11 @@ public class UserServiceImpl implements UserServiceInterface {
         return null;
     }
 
+    @Override
+    public List<TrackedJob> getUserJobs(Long id) {
+        return trackedJobDao.findTrackedJobByuseId(id);
+    }
+
     private boolean isBlank(String s) {
         return s == null || s.isBlank();
     }

@@ -29,5 +29,5 @@ public interface UserServiceInterface {
 
      TrackedJob addJobstatus( TrackedJob status);
 
-
+     List<TrackedJob> getUserJobs(Long id);
 }
