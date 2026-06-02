@@ -69,8 +69,8 @@ public class UserPreference {
                 .map(String::trim)
                 .toList();
     }
+
     public String getSkills() {
         return skills_csv == null ? null : String.join(",", skills_csv);
     }
-
 }

@@ -1,7 +1,6 @@
 package org.example.dao;
 
 import org.example.dao.mappers.user_preferencesmapper;
-import org.example.model.Job;
 import org.example.model.UserPreference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
