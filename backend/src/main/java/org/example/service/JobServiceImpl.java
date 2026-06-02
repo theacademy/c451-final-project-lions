@@ -98,12 +98,30 @@ public class JobServiceImpl implements JobServiceInterface {
         }
 
         UserPreference preference = userPreferenceDao.findUserPreferenceById(userId);
-        if (preference == null || preference.getSkills() == null || preference.getSkills().isBlank()) {
+        if (preference == null) {
             job.setMatchPercent(0);
             return job;
         }
 
-        int matchPercent = calculateMatchPercent(normalizeSkills(job.getSkillsCsv()), normalizeSkills(preference.getSkills_csv()));
+        String jobSkillsCsv = job.getSkillsCsv();
+        String userSkillsCsv = preference.getSkills();
+
+        // Explicitly normalize both skill strings before computing overlap.
+        if (jobSkillsCsv == null || jobSkillsCsv.isBlank()) {
+            job.setMatchPercent(0);
+            return job;
+        }
+
+        if (userSkillsCsv == null || userSkillsCsv.isBlank()) {
+            List<String> userSkillsList = preference.getSkills_csv();
+            if (userSkillsList == null || userSkillsList.isEmpty()) {
+                job.setMatchPercent(0);
+                return job;
+            }
+            userSkillsCsv = String.join(",", userSkillsList);
+        }
+
+        int matchPercent = calculateMatchPercent(normalizeSkills(jobSkillsCsv), normalizeSkills(userSkillsCsv));
         job.setMatchPercent(matchPercent);
         return job;
     }

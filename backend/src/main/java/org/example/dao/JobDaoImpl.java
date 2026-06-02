@@ -61,7 +61,7 @@ public class JobDaoImpl  implements JobDao{
         try {
             final String SELECT_JOBS_BY_ID =
                     "SELECT j.*, c.name AS company_name " +
-                    "FROM jobs j JOIN companies c ON j.company_id = c.id " +
+                    "FROM jobs j LEFT JOIN companies c ON j.company_id = c.id " +
                     "WHERE j.id = ?";
             return jdbc.queryForObject(SELECT_JOBS_BY_ID, new jobWithCompanyMapper(), id);
         } catch(DataAccessException ex) {
