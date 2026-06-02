@@ -7,6 +7,7 @@ public class UserPreference {
     private int user_id;
     private int years_experience;
     private String desired_location;
+    private String desired_role;
     private String remote_preference;
     private String job_type;
     private List<String> skills_csv;
@@ -33,6 +34,14 @@ public class UserPreference {
 
     public void setDesired_location(String desired_location) {
         this.desired_location = desired_location;
+    }
+
+    public String getDesired_role() {
+        return desired_role;
+    }
+
+    public void setDesired_role(String desired_role) {
+        this.desired_role = desired_role;
     }
 
     public String getRemote_preference() {
