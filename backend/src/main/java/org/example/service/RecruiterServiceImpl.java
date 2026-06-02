@@ -30,8 +30,8 @@ public class RecruiterServiceImpl implements RecruiterServiceInterface {
 
 
     @Override
-    public User findRecruiterById(int id) {
-        return null;
+    public Recrutiter findRecruiterById(int id) {
+        return recruiterDao.findRecrutiterById(id);
     }
 
 
