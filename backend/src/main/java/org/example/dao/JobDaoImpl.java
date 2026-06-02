@@ -1,6 +1,7 @@
 package org.example.dao;
 
 import org.example.dao.mappers.jobsmapper;
+import org.example.dao.mappers.jobWithCompanyMapper;
 import org.example.model.Job;
 import org.example.model.Search;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class JobDaoImpl  implements JobDao{
         int pageSize = 20;
         int offset = page * pageSize;
         try {
-            final String SELECT_JOBS_BY_ID = "SELECT * FROM jobs WHERE company_id = ?" +
+            final String SELECT_JOBS_BY_ID = "SELECT * FROM jobs WHERE company_id = ? " +
                     "LIMIT ? OFFSET ?";
             return jdbc.query(SELECT_JOBS_BY_ID, new jobsmapper(), company_id, pageSize, offset);
         } catch(DataAccessException ex) {
@@ -43,7 +44,7 @@ public class JobDaoImpl  implements JobDao{
         int pageSize = 20;
         int offset = page * pageSize;
         try {
-            final String SELECT_JOBS_BY_ID = "SELECT * FROM jobs" +
+            final String SELECT_JOBS_BY_ID = "SELECT * FROM jobs " +
                     "LIMIT ? OFFSET ?";
             return jdbc.query(SELECT_JOBS_BY_ID, new jobsmapper(), pageSize, offset);
         } catch(DataAccessException ex) {
@@ -56,8 +57,11 @@ public class JobDaoImpl  implements JobDao{
     public Job findJobById(int id) {
 
         try {
-            final String SELECT_JOBS_BY_ID = "SELECT * FROM jobs WHERE id = ?";
-            return jdbc.queryForObject(SELECT_JOBS_BY_ID, new jobsmapper(), id);
+            final String SELECT_JOBS_BY_ID =
+                    "SELECT j.*, c.name AS company_name " +
+                    "FROM jobs j JOIN companies c ON j.company_id = c.id " +
+                    "WHERE j.id = ?";
+            return jdbc.queryForObject(SELECT_JOBS_BY_ID, new jobWithCompanyMapper(), id);
         } catch(DataAccessException ex) {
             return null;
         }
@@ -148,6 +152,41 @@ public class JobDaoImpl  implements JobDao{
         }
 
         return (int) Math.round(100.0 * intersection.size() / jobSkills.size());
+    }
+
+    @Override
+    public List<Job> findActiveJobs(String role, String location, String seniority, int page) {
+        int pageSize = 20;
+        int offset = page * pageSize;
+        try {
+            StringBuilder sql = new StringBuilder(
+                    "SELECT j.*, c.name AS company_name " +
+                    "FROM jobs j JOIN companies c ON j.company_id = c.id " +
+                    "WHERE j.is_active = TRUE "
+            );
+            List<Object> params = new ArrayList<>();
+
+            if (role != null && !role.isBlank()) {
+                sql.append("AND j.title LIKE ? ");
+                params.add("%" + role.trim() + "%");
+            }
+            if (location != null && !location.isBlank()) {
+                sql.append("AND j.location LIKE ? ");
+                params.add("%" + location.trim() + "%");
+            }
+            if (seniority != null && !seniority.isBlank()) {
+                sql.append("AND j.seniority_level = ? ");
+                params.add(seniority);
+            }
+
+            sql.append("ORDER BY j.posted_at DESC LIMIT ? OFFSET ?");
+            params.add(pageSize);
+            params.add(offset);
+
+            return jdbc.query(sql.toString(), new jobWithCompanyMapper(), params.toArray());
+        } catch (DataAccessException ex) {
+            return new ArrayList<>();
+        }
     }
 
     @Override

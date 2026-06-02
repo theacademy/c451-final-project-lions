@@ -18,4 +18,6 @@ public interface JobDao {
 
     public List<Job> getAllJobs(int page);
 
+    List<Job> findActiveJobs(String role, String location, String seniority, int page);
+
 }

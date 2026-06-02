@@ -18,5 +18,6 @@ public interface JobServiceInterface {
 
     List<Job> searchJob(Search search);
 
+    List<Job> getBoardJobs(String role, String location, String seniority, int page);
 
 }

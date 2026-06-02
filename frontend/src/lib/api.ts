@@ -18,6 +18,7 @@ export interface Preferences {
   user_id?: number;
   skills_csv?: string;
   desired_location?: string;
+  desired_role?: string;
   remote_preference?: string;
   job_type?: string;
   years_experience?: number;
@@ -71,4 +72,46 @@ export async function savePreferences(prefs: Preferences): Promise<void> {
     body: JSON.stringify(prefs),
   });
   if (!res.ok) throw new Error("Failed to save preferences");
+}
+
+export interface BoardJob {
+  id: number;
+  title: string;
+  companyName?: string;
+  location?: string;
+  seniorityLevel?: string;
+  skillsCsv?: string;
+  absoluteUrl?: string;
+}
+
+export interface BoardFilters {
+  role?: string;
+  location?: string;
+  seniority?: string;
+  page?: number;
+}
+
+// GET /job/board — active jobs, optional role/location/seniority filters (public)
+export async function getBoardJobs(filters: BoardFilters = {}): Promise<BoardJob[]> {
+  const q = new URLSearchParams();
+  if (filters.role) q.set("role", filters.role);
+  if (filters.location) q.set("location", filters.location);
+  if (filters.seniority) q.set("seniority", filters.seniority);
+  if (filters.page != null) q.set("page", String(filters.page));
+  const res = await fetch(`${BASE_URL}/job/board?${q.toString()}`);
+  if (!res.ok) throw new Error("Failed to load jobs");
+  return res.json();
+}
+
+export interface JobDetail extends BoardJob {
+  descriptionText?: string;
+  descriptionHtml?: string;
+}
+
+// GET /job/{id} — single job; null when not found (HTTP 204)
+export async function getJobById(id: number | string): Promise<JobDetail | null> {
+  const res = await fetch(`${BASE_URL}/job/${id}`);
+  if (res.status === 204) return null;
+  if (!res.ok) throw new Error("Failed to load job");
+  return res.json();
 }

@@ -27,6 +27,9 @@ export default function UserSignUp() {
   // job type
   const [jobType, setJobType] = useState("");
 
+  // desired role
+  const [desiredRole, setDesiredRole] = useState("");
+
 
   const [locationCount, setLocationCount] = useState(0);
   const [location, setLocation] = useState("");
@@ -74,6 +77,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     await savePreferences({
       skills_csv: skillsCsv,
       desired_location: locations,
+      desired_role: desiredRole || undefined,
       remote_preference: workType,
       years_experience: yearsExperience ? Number(yearsExperience) : 0,
       job_type: jobType || undefined,
@@ -145,7 +149,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   return (
     <>
       <h1 className="text-4xl font-bold">Join us today</h1>
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex flex-col items-center justify-center">
         <div className="card w-96 bg-base-100 card-md shadow-sm">
           <div className="card-body">
             <form
@@ -205,6 +209,18 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                 required
               />
               {error && <p className="text-error text-sm mt-2">{error}</p>}
+
+              <label htmlFor="desired-role">
+                Desired role
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. Frontend Engineer"
+                className="input"
+                id="desired-role"
+                value={desiredRole}
+                onChange={(e) => setDesiredRole(e.target.value)}
+              />
 
               {/* User tech preferences */}
               <label htmlFor="tech-skills">

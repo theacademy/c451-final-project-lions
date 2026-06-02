@@ -112,6 +112,16 @@ public class Job {
         this.matchPercent = matchPercent;
     }
 
+    private String companyName; // transient: populated from a join with companies
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
     public Timestamp getPostedAt() {
         return postedAt;
     }
