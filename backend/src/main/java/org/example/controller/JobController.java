@@ -59,6 +59,15 @@ public class JobController {
         return ResponseEntity.ok(created);
     }
 
+    // Regular job board: all active jobs, optional location/seniority filters, paginated.
+    @GetMapping("/board")
+    public ResponseEntity<List<Job>> board(@RequestParam(required = false) String role,
+                                           @RequestParam(required = false) String location,
+                                           @RequestParam(required = false) String seniority,
+                                           @RequestParam(defaultValue = "0") int page) {
+        return ResponseEntity.ok(jobService.getBoardJobs(role, location, seniority, page));
+    }
+
     @PostMapping("/search")
     public ResponseEntity<List<Job>> searchJobs(@RequestBody Search search) {
         if (search == null || search.getCompanyId() == null) {

@@ -3,6 +3,18 @@ import Image from "next/image";
 import { JobInfo } from "../types/types";
 import { useEffect, useState } from "react";
 
+interface JobInfo {
+  domain?: string;
+  alt?: string;
+  company: string;
+  role: string;
+  YoE?: string;
+  location?: string;
+  workType?: string;
+  salary?: string;
+  key?: number;
+}
+
 // Get the API publishable key
 const KEY = process.env.NEXT_PUBLIC_LOGO_DEV_PUBLISHABLE_KEY;
 const URL = process.env.NEXT_PUBLIC_API_BASE_URL + "/job/Job";
@@ -42,13 +54,20 @@ export function JobCard(props: JobInfo) {
           <h3 className="text-md">{company}</h3>
           <h2 className="card-title">{props.title}</h2>
           <p>
-            <span className="text-primary">{props.seniorityLevel}</span>
-            <br></br>
+            {props.YoE && (
+              <>
+                <span className="text-primary">{props.YoE}</span>
+                <br />
+              </>
+            )}
             {props.location}
-            {/* {props.location}-{props.workType} */}
-            <br></br>
-            {/* {props.salary}
-            <br></br> */}
+            {props.workType ? ` · ${props.workType}` : ""}
+            {props.salary && (
+              <>
+                <br />
+                {props.salary}
+              </>
+            )}
           </p>
         </div>
       </div>

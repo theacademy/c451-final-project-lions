@@ -1,11 +1,13 @@
 "use client";
 import { ApplicantMatchCard } from "@/src/components/match-card";
-import Image from "next/image";
-import { JobInfo } from "@/src/types/types";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import Image from "next/image";
+import { JobInfo } from "@/src/types/types";
 
 // Get the API publishable key
+import { getJobById, JobDetail } from "@/src/lib/api";
+
 const KEY = process.env.NEXT_PUBLIC_LOGO_DEV_PUBLISHABLE_KEY;
 const URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -13,96 +15,89 @@ const URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 const placeholderApplicantID = 1;
 
 export default function ApplicantJobPage() {
-  // Get job id from route
-  const params = useParams<{ id: string }>();
-  const jobID = params.id.replace(/\D/g, "");
+  const params = useParams();
+  const id = Array.isArray(params.id) ? params.id[0] : params.id;
 
-  console.log("job id is: ", jobID);
-  const [job, setJob] = useState<JobInfo>({
-    id: 0,
-    absoluteUrl: "",
-    active: false,
-    companyId: 0,
-    createdAt: null,
-    descriptionText: "",
-    greenhouseJobId: 0,
-    lastSeenAt: null,
-    location: "",
-    postedAt: null,
-    seniorityLevel: "",
-    skillsCsv: "",
-    title: "",
+  const [job, setJob] = useState<JobDetail | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-    // Needs to be added to database
-    YoE: "",
-    workLocationType: "",
-    salary: "",
-    jobType: "",
-
-    // This information is to retrieve the logo for the company
-    companyName: "",
-  });
-
-  // Get Job information from Job ID
   useEffect(() => {
-    const fetchPageData = async () => {
-      try {
-        const response = await fetch(`${URL}/job/${jobID}`);
-        if (!response.ok) throw new Error("Network response was not ok");
+    if (!id) return;
+    setLoading(true);
+    setError("");
+    getJobById(id)
+      .then((j) => setJob(j))
+      .catch(() => setError("Couldn't load this job."))
+      .finally(() => setLoading(false));
+  }, [id]);
 
-        const jsonData = await response.json();
-        setJob(jsonData);
+  if (loading) return <main className="grow p-6">Loading…</main>;
+  if (error || !job)
+    return <main className="grow p-6">{error || "Job not found."}</main>;
 
-        console.log(job);
-      } catch (err) {
-        console.log("There was a problem loading the data");
-      }
-    };
-
-    fetchPageData();
-  }, []);
+  const domain = job.companyName
+    ? job.companyName.toLowerCase().replace(/\s+/g, "") + ".com"
+    : undefined;
 
   return (
     <main className="flex flex-col grow max-w-3/4 mx-auto p-6 gap-6">
       <div className="card bg-base-100 shadow-sm p-2">
         <div className="card-body p-10">
-          <div className="flex flex-row justify-between">
+          <div className="flex flex-row justify-between gap-6">
             <div>
-              <figure className="justify-start p-5">
-                <Image
-                  src={`https://img.logo.dev/name/${job.companyName}?token=${KEY}&fallback=404`}
-                  alt={`${job.companyName} logo`}
-                  width={128}
-                  height={128}
-                />
-              </figure>
-              <h3 className="text-md">{job.companyName}</h3>
+              {domain && (
+                <figure className="justify-start p-5">
+                  <Image
+                    src={`https://img.logo.dev/${domain}?token=${KEY}&fallback=404`}
+                    alt={`${job.companyName} logo`}
+                    width={128}
+                    height={128}
+                  />
+                </figure>
+              )}
+              <h3 className="text-md">{job.companyName ?? "Company"}</h3>
               <h2 className="card-title">{job.title}</h2>
               <p>
-                <span className="text-primary">{job.YoE}</span>
-                <br></br>
-                {job.location}
-                {job.workLocationType != null && (
-                  <span> - {job.workLocationType}</span>
+                {job.seniorityLevel && (
+                  <>
+                    <span className="text-primary">{job.seniorityLevel}</span>
+                    <br />
+                  </>
                 )}
-                <br></br>
-                {job.salary}
-                <br></br>
-                {job.jobType}
-                <br></br>
+                {job.location}
               </p>
             </div>
-            <ApplicantMatchCard
-              jobID={job.id}
-              applicantID={placeholderApplicantID}
-              applyButton={true}
-              applyURL={job.absoluteUrl}
-            />
+
+            <div className="card bg-base-100 w-96 shadow-sm p-2 h-fit">
+              <div className="card-body justify-center gap-2 text-center">
+                {job.absoluteUrl ? (
+                  <a
+                    href={job.absoluteUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-primary btn-block"
+                  >
+                    Apply now
+                  </a>
+                ) : (
+                  <button className="btn btn-primary btn-block" disabled>
+                    Apply now
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
-          <div className="pt-6">
-            <h3 className="text-lg font-bold">Role Description</h3>
-            <p>{job.descriptionText}</p>
-          </div>
+
+          {job.descriptionHtml && (
+            <div className="pt-6">
+              <h3 className="text-lg font-bold">Role Description</h3>
+              <div
+                className="max-w-none [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:mb-3 [&_li]:mb-1 [&_strong]:font-bold [&_a]:text-primary [&_a]:underline"
+                dangerouslySetInnerHTML={{ __html: job.descriptionHtml }}
+              />
+            </div>
+          )}
         </div>
       </div>
     </main>

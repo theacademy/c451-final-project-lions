@@ -16,6 +16,7 @@ public class user_preferencesmapper implements RowMapper<UserPreference> {
         preference.setUser_id( rs.getInt("user_id"));
         preference.setYears_experience(rs.getInt("years_experience"));
         preference.setDesired_location(rs.getString("desired_location"));
+        preference.setDesired_role(rs.getString("desired_role"));
         preference.setRemote_preference(rs.getString("remote_preference"));
         preference.setJob_type(rs.getString("job_type"));
         preference.setSkills_csv(rs.getString("skills_csv"));

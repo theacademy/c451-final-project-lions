@@ -107,6 +107,11 @@ public class JobServiceImpl implements JobServiceInterface {
         return JobDao.searchJob(search);
     }
 
+    @Override
+    public List<Job> getBoardJobs(String role, String location, String seniority, int page) {
+        return JobDao.findActiveJobs(role, location, seniority, page);
+    }
+
     public List<Job> findJobByGreenhouseId(Long greenhouseJobId) {
         if (greenhouseJobId == null) {
             return null;

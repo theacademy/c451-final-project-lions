@@ -2,6 +2,8 @@ package org.example.dao;
 
 import org.example.model.TrackedJob;
 
+import java.util.List;
+
 public interface TrackedJobDao {
 
 
@@ -13,4 +15,6 @@ public interface TrackedJobDao {
     void updateTrackedJob(TrackedJob trackedJob);
 
     void deleteTrackedJob(int id);
+
+    List<TrackedJob> findTrackedJobByjobId(Long id);
 }
