@@ -2,6 +2,7 @@ package org.example.service;
 
 import org.example.model.Job;
 import org.example.model.Search;
+import org.example.model.TrackedJob;
 
 import java.util.List;
 
@@ -24,4 +25,5 @@ public interface JobServiceInterface {
 
     public List<Job> getCompanyJobs(Long id) ;
 
+    public TrackedJob addJobMatch(int jobId, int userId);
 }

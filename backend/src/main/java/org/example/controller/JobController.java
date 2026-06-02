@@ -3,6 +3,7 @@ package org.example.controller;
 import org.example.dao.UserPreferenceDaoImpl;
 import org.example.model.Job;
 import org.example.model.Search;
+import org.example.model.TrackedJob;
 import org.example.model.UserPreference;
 import org.example.service.JobServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,7 +106,17 @@ public class JobController {
         return ResponseEntity.ok(jobs);
     }
 
-    @GetMapping("/match/{jobId}/applicant/{userId}")
+    @PostMapping("/match/{jobId}/applicant/{userId}")
+    public ResponseEntity<?> addJobMatch(@PathVariable int jobId,
+                                                  @PathVariable int userId) {
+        TrackedJob job = jobService.addJobMatch(jobId, userId);
+        if (job == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Job or applicant not found");
+        }
+        return ResponseEntity.ok(job);
+    }
+
+    @GetMapping("/{jobId}/applicant/{userId}")
     public ResponseEntity<?> getJobApplicantMatch(@PathVariable int jobId,
                                                   @PathVariable int userId) {
         Job job = jobService.getJobApplicantMatch(jobId, userId);
@@ -114,7 +125,6 @@ public class JobController {
         }
         return ResponseEntity.ok(job);
     }
-
 
     @GetMapping("/Companyjob/{id}")
     public ResponseEntity getCompanyjob(

@@ -2,9 +2,11 @@ package org.example.service;
 
 import org.example.dao.JobDao;
 import org.example.dao.JobDaoImpl;
+import org.example.dao.TrackedJobDaoImpl;
 import org.example.dao.UserPreferenceDaoImpl;
 import org.example.model.Job;
 import org.example.model.Search;
+import org.example.model.TrackedJob;
 import org.example.model.UserPreference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -31,6 +33,8 @@ public class JobServiceImpl implements JobServiceInterface {
     @Autowired
     private JobDaoImpl JobDao;
 
+    @Autowired
+    private TrackedJobDaoImpl trackedJobDao;
     @Autowired
     private UserPreferenceDaoImpl userPreferenceDao;
 
@@ -124,6 +128,49 @@ public class JobServiceImpl implements JobServiceInterface {
         int matchPercent = calculateMatchPercent(normalizeSkills(jobSkillsCsv), normalizeSkills(userSkillsCsv));
         job.setMatchPercent(matchPercent);
         return job;
+    }
+
+    @Override
+    public TrackedJob addJobMatch(int jobId, int userId) {
+        if (jobId <= 0 || userId <= 0) {
+            return null;
+        }
+
+        Job job = findJobById(jobId);
+        if (job == null) {
+            return null;
+        }
+
+        UserPreference preference = userPreferenceDao.findUserPreferenceById(userId);
+        if (preference == null) {
+
+            return null;
+        }
+
+        TrackedJob trackedJob = new TrackedJob();
+        trackedJob.setJob_id(jobId);
+        trackedJob.setUser_id(userId);
+
+        String jobSkillsCsv = job.getSkillsCsv();
+        String userSkillsCsv = preference.getSkills();
+
+        // Explicitly normalize both skill strings before computing overlap.
+        if (jobSkillsCsv == null ) {
+            return null;
+        }
+
+        if (userSkillsCsv == null || userSkillsCsv.isBlank()) {
+            List<String> userSkillsList = preference.getSkills_csv();
+            if (userSkillsList == null || userSkillsList.isEmpty()) {
+                trackedJob.setMatchedPercent(0);
+                return trackedJobDao.createNewTrackedJob(trackedJob);
+            }
+            userSkillsCsv = String.join(",", userSkillsList);
+        }
+
+        int matchPercent = calculateMatchPercent(normalizeSkills(jobSkillsCsv), normalizeSkills(userSkillsCsv));
+        trackedJob.setMatchedPercent(matchPercent);
+        return trackedJobDao.createNewTrackedJob(trackedJob);
     }
 
     @Override
