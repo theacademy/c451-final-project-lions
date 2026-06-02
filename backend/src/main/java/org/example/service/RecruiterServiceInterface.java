@@ -1,5 +1,6 @@
 package org.example.service;
 
+import org.example.model.Job;
 import org.example.model.TrackedJob;
 import org.example.model.User;
 
@@ -14,7 +15,7 @@ public interface RecruiterServiceInterface {
 
     List<TrackedJob> getUserJobs(Long id);
 
-
+    public List<Job> getCompanyJobs(Long id);
 
     String login(User user);
 }

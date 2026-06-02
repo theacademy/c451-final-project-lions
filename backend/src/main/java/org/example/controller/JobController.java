@@ -104,4 +104,38 @@ public class JobController {
         }
         return ResponseEntity.ok(jobs);
     }
+
+    @GetMapping("/match/{jobId}/applicant/{userId}")
+    public ResponseEntity<?> getJobApplicantMatch(@PathVariable int jobId,
+                                                  @PathVariable int userId) {
+        Job job = jobService.getJobApplicantMatch(jobId, userId);
+        if (job == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Job or applicant not found");
+        }
+        return ResponseEntity.ok(job);
+    }
+
+
+    @GetMapping("/Companyjob/{id}")
+    public ResponseEntity getCompanyjob(
+            @RequestBody Long CompanyId,
+            @RequestHeader("Authorization") String authHeader)
+    {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Missing or invalid token");
+        }
+
+        try {
+
+
+            return ResponseEntity.ok(jobService.getCompanyJobs(CompanyId));
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid token");
+        }
+
+    }
 }

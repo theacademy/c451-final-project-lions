@@ -2,8 +2,10 @@ package org.example.dao;
 
 import org.example.dao.mappers.jobsmapper;
 import org.example.dao.mappers.jobWithCompanyMapper;
+import org.example.dao.mappers.trackedJobsMapper;
 import org.example.model.Job;
 import org.example.model.Search;
+import org.example.model.TrackedJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -66,7 +68,15 @@ public class JobDaoImpl  implements JobDao{
             return null;
         }
     }
-
+    @Override
+    public List<Job> findJobByCompanyId(Long id) {
+        try {
+            final String SELECT_TRACKED_BY_ID = "SELECT * FROM jobs WHERE company_id = ?";
+            return jdbc.query(SELECT_TRACKED_BY_ID, new jobsmapper(), id);
+        } catch(DataAccessException ex) {
+            return null;
+        }
+    }
     @Override
     public List<Job> searchJob(Search search) {
         int pageSize = 20;
