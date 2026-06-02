@@ -7,6 +7,7 @@ interface ApplicantInfo {
   match: number;
   skills: string[];
   userID: number;
+  jobID: number;
   email: string;
 }
 
@@ -18,6 +19,7 @@ const placeholder1: ApplicantInfo = {
   skills: ["Python", "Java"],
   email: "johndoe@mail.com",
   userID: 0,
+  jobID: 0,
 };
 
 const placeholder2: ApplicantInfo = {
@@ -28,6 +30,7 @@ const placeholder2: ApplicantInfo = {
   skills: ["Python", "Java"],
   email: "johndoe@mail.com",
   userID: 1,
+  jobID: 1,
 };
 
 const placeholder3: ApplicantInfo = {
@@ -38,6 +41,7 @@ const placeholder3: ApplicantInfo = {
   skills: ["Python", "Java"],
   email: "johndoe@mail.com",
   userID: 2,
+  jobID: 2,
 };
 
 const placeholder4: ApplicantInfo = {
@@ -48,6 +52,7 @@ const placeholder4: ApplicantInfo = {
   skills: ["Python", "Java"],
   email: "johndoe@mail.com",
   userID: 3,
+  jobID: 3,
 };
 
 const placeholder5: ApplicantInfo = {
@@ -58,6 +63,7 @@ const placeholder5: ApplicantInfo = {
   skills: ["Python", "Java"],
   email: "johndoe@mail.com",
   userID: 4,
+  jobID: 4,
 };
 
 const placeholder6: ApplicantInfo = {
@@ -68,6 +74,7 @@ const placeholder6: ApplicantInfo = {
   skills: ["Python", "Java"],
   email: "johndoe@mail.com",
   userID: 5,
+  jobID: 5,
 };
 const placeholders: ApplicantInfo[] = [
   placeholder1,

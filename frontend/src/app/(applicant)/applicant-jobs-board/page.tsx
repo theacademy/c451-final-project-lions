@@ -16,8 +16,8 @@ export default function ApplicantJobBoard() {
 
   useEffect(() => {
     let active = true;
-    setLoading(true);
-    setError("");
+    // setLoading(true);
+    // setError("");
     getBoardJobs({
       role: role || undefined,
       location: location || undefined,

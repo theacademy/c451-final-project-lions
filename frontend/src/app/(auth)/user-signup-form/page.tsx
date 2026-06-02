@@ -311,7 +311,7 @@ export default function UserSignUp() {
                   <label htmlFor="work-type">
                     Preferred work style(s)
                     <span className="text-primary">*</span>
-                  </label>{" "}
+                  </label>
                   <label className="label">
                     <input
                       type="checkbox"

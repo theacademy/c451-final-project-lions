@@ -28,6 +28,13 @@ export interface ApplicantInfo {
   email: string;
   firstName: string;
   lastName: string;
+  yearsExperience?: number;
+  desiredLocation?: string;
+  desiredRole?: string;
+  jobType?: string;
+  skills?: string[];
+  locations?: string[];
+  remotePreference?: string[];
 }
 
 export interface ApplicantPreferences {

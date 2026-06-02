@@ -1,18 +1,11 @@
 "use client";
-import { ApplicantMatchCard } from "@/src/components/match-card";
+
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
-import { JobInfo } from "@/src/types/types";
-
-// Get the API publishable key
 import { getJobById, JobDetail } from "@/src/lib/api";
 
 const KEY = process.env.NEXT_PUBLIC_LOGO_DEV_PUBLISHABLE_KEY;
-const URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-// TODO: update with actual userID
-const placeholderApplicantID = 1;
 
 export default function ApplicantJobPage() {
   const params = useParams();
@@ -24,8 +17,8 @@ export default function ApplicantJobPage() {
 
   useEffect(() => {
     if (!id) return;
-    setLoading(true);
-    setError("");
+    // setLoading(true);
+    // setError("");
     getJobById(id)
       .then((j) => setJob(j))
       .catch(() => setError("Couldn't load this job."))

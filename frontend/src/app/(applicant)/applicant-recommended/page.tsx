@@ -38,7 +38,7 @@ export default function ApplicantJobBoard() {
         {/* TODO: change the key to be the actual job id KEY */}
         {jobs.map((item) => (
           <Link href={`/applicant-jobs-board/job-${item.id}`} key={item.id}>
-            <JobCard {...item} />
+            {/* <JobCard {...item} /> */}
           </Link>
         ))}
       </div>
