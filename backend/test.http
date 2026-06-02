@@ -1,0 +1,21 @@
+@backend = http://localhost:8080
+
+###
+POST {{backend}}/job/search
+Content-Type: application/json
+
+{
+  "companyId": 1,
+  "location": "Toronto",
+  "seniority_level": "Mid",
+  "skills": ["Java", "SQL", "Python"]
+}
+
+###
+POST {{backend}}/job/search
+Content-Type: application/json
+
+{
+  "companyId": 1,
+  "skillsCsv": "Java,Python,SQL"
+}
