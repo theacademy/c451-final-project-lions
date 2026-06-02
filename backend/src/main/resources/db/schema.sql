@@ -37,6 +37,18 @@ CREATE TABLE companies (
     last_synced_at TIMESTAMP NULL
 );
 
+CREATE TABLE recruiters (
+     id INT AUTO_INCREMENT PRIMARY KEY,
+     first_name VARCHAR(100) NOT NULL,
+     last_name VARCHAR(100) NOT NULL,
+     email_address VARCHAR(255) NOT NULL UNIQUE,
+     password VARCHAR(255) NOT NULL,
+     company_id BIGINT,
+     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+     CONSTRAINT fk_users_company FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
+ );
+
 CREATE TABLE jobs (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     greenhouse_job_id BIGINT NOT NULL UNIQUE,
@@ -60,6 +72,7 @@ CREATE TABLE tracked_jobs (
     user_id BIGINT NOT NULL,
     job_id BIGINT NOT NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'wishlist',
+    match_score INT,
     notes TEXT,
     applied_at TIMESTAMP NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
