@@ -1,6 +1,7 @@
 import { getToken } from "@/src/lib/auth";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
+const BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
 
 export interface SignupPayload {
   first_name: string;
@@ -56,6 +57,16 @@ export async function login(payload: LoginPayload): Promise<string | null> {
 // GET /user/preferences — null when none exist yet (HTTP 204) => first login
 export async function getPreferences(): Promise<Preferences | null> {
   const res = await fetch(`${BASE_URL}/user/preferences`, {
+    headers: { ...authHeaders() },
+  });
+  if (res.status === 204) return null;
+  if (!res.ok) throw new Error("Failed to load preferences");
+  return res.json();
+}
+
+// GET /user/preferences — null when none exist yet (HTTP 204) => first login
+export async function getAllJobs(): Promise<Preferences | null> {
+  const res = await fetch(`${BASE_URL}/job/Job`, {
     headers: { ...authHeaders() },
   });
   if (res.status === 204) return null;

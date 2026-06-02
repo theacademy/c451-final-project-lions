@@ -1,27 +1,26 @@
 export interface JobInfo {
-  jobID: number;
-  companyID: string;
-  roleTitle: string;
-  location?: string;
-  descriptionHTML?: string;
-  description?: string;
-  url?: string;
+  id: number;
+  absoluteUrl: string;
+  active: boolean;
+  companyId: number;
+  createdAt: Date | null;
+  descriptionText: string;
+  greenhouseJobId: number;
+  lastSeenAt: Date | null;
+  location: string;
+  postedAt: Date | null;
   seniorityLevel: string;
-  skills?: string[];
-  posted?: Date;
-  isActive: boolean;
-  lastSeen: Date;
-  createdAt: Date;
+  skillsCsv: string;
+  title: string;
 
   // Needs to be added to database
-  YoE: string;
-  workLocationType: string;
+  YoE?: string;
+  workLocationType?: string;
   salary?: string;
-  jobType: string;
+  jobType?: string; // full-time, part-time, etc
 
-  //  This information is to retrieve the logo for the company
-  domain?: string;
-  alt?: string;
+  // This information is to retrieve the logo for the company
+  companyName?: string;
 }
 
 export interface ApplicantInfo {

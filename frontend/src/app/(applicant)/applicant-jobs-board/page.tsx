@@ -1,50 +1,43 @@
+"use client";
 import { JobCard } from "@/src/components/job-card";
 import Link from "next/link";
+import React, { useState, useEffect } from "react";
+import { JobInfo } from "@/src/types/types";
 
-interface JobInfo {
-  domain?: string;
-  alt?: string;
-  company: string;
-  role: string;
-  YoE: string;
-  location: string;
-  workType: string;
-  salary: string;
-  jobID?: number;
-}
-
-const placeholder: JobInfo = {
-  domain: "morganstanley.com",
-  company: "Morgan Stanley",
-  role: "Junior Java Developper",
-  YoE: "3 years of experience",
-  location: "Toronto, Canada",
-  workType: "Hybrid",
-  salary: "60k",
-};
-
-const placeholders: JobInfo[] = Array(6)
-  .fill(null)
-  .map((_, i) => ({
-    ...placeholder,
-    jobID: i,
-  }));
+const URL = process.env.NEXT_PUBLIC_API_BASE_URL + "/job/Job";
 
 export default function ApplicantJobBoard() {
+  const [page, setPage] = useState(1);
+  const [jobs, setJobs] = useState<JobInfo[]>([]);
+
+  useEffect(() => {
+    const fetchPageData = async () => {
+      try {
+        const response = await fetch(URL);
+        if (!response.ok) throw new Error("Network response was not ok");
+
+        const jsonData = await response.json();
+        setJobs(jsonData);
+        jobs.map((item) => console.log(item.id));
+      } catch (err) {
+        console.log("There was a problem loading the data");
+      }
+    };
+
+    fetchPageData();
+  }, []);
+
   return (
-    <main className="flex flex-col grow mx-auto p-6 gap-6">
+    <main className="flex flex-col grow  mx-auto p-6 gap-6">
       <div>
         <h2 className="text-md">Jobs</h2>
         <p>Let your next role find you.</p>
       </div>
       {/* Job cards start here */}
-      <div className="grid grid-cols-3 gap-10 ">
+      <div className="grid grid-cols-3 gap-10 auto-rows-fr">
         {/* TODO: change the key to be the actual job id KEY */}
-        {placeholders.map((item) => (
-          <Link
-            href={`/applicant-jobs-board/job-${item.jobID}`}
-            key={item.jobID}
-          >
+        {jobs.map((item) => (
+          <Link href={`/applicant-jobs-board/job-${item.id}`} key={item.id}>
             <JobCard {...item} />
           </Link>
         ))}
