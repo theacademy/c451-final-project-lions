@@ -18,6 +18,7 @@ export interface Preferences {
   user_id?: number;
   skills_csv?: string;
   desired_location?: string;
+  desired_role?: string;
   remote_preference?: string;
   job_type?: string;
   years_experience?: number;
