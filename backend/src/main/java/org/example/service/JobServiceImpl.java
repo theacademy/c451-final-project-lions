@@ -18,10 +18,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -171,6 +168,31 @@ public class JobServiceImpl implements JobServiceInterface {
         int matchPercent = calculateMatchPercent(normalizeSkills(jobSkillsCsv), normalizeSkills(userSkillsCsv));
         trackedJob.setMatchedPercent(matchPercent);
         return trackedJobDao.createNewTrackedJob(trackedJob);
+    }
+
+    @Override
+    public List<Job> searchorder(Search search, int userId){
+        List<Job> jobs=  JobDao.searchJob(search);
+        UserPreference preference = userPreferenceDao.findUserPreferenceById(userId);
+        String userSkillsCsv = preference.getSkills();
+        if (preference.getSkills().isBlank()) {
+
+            return null;
+        }
+        int matchPercent;
+        for (Job job : jobs) {
+                 matchPercent = calculateMatchPercent(
+                    normalizeSkills(job.getSkillsCsv()),
+                    normalizeSkills(userSkillsCsv)
+            );
+            job.setMatchPercent(matchPercent);
+        }
+
+        jobs = jobs.stream()
+                .filter(job -> job.getMatchPercent() >= 40)
+                .sorted(Comparator.comparingInt(Job::getMatchPercent).reversed())
+                .toList();
+        return jobs;
     }
 
     @Override

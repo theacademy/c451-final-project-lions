@@ -26,4 +26,6 @@ public interface JobServiceInterface {
     public List<Job> getCompanyJobs(Long id) ;
 
     public TrackedJob addJobMatch(int jobId, int userId);
+
+    List<Job> searchorder(Search search, int userId);
 }

@@ -81,6 +81,19 @@ public class JobController {
         return ResponseEntity.ok(jobs);
     }
 
+    @PostMapping("/search/{id}")
+    public ResponseEntity<List<Job>> searchUserJobs(@PathVariable int id,@RequestBody Search search ) {
+        if (search == null || search.getCompanyId() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+        List<Job> jobs = jobService.searchorder(search,id);
+        if (jobs == null) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+        return ResponseEntity.ok(jobs);
+    }
+
+
     @PostMapping("/search/user/{userId}")
     public ResponseEntity<?> searchJobsByUserPreference(@PathVariable int userId,
                                                         @RequestBody Search search) {
