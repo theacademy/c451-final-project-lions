@@ -104,4 +104,28 @@ public class JobController {
         }
         return ResponseEntity.ok(jobs);
     }
+
+
+    @GetMapping("/Companyjob/{id}")
+    public ResponseEntity getCompanyjob(
+            @RequestBody Long CompanyId,
+            @RequestHeader("Authorization") String authHeader)
+    {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Missing or invalid token");
+        }
+
+        try {
+
+
+            return ResponseEntity.ok(jobService.getCompanyJobs(CompanyId));
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid token");
+        }
+
+    }
 }

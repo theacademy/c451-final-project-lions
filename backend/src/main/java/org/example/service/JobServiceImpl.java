@@ -78,6 +78,11 @@ public class JobServiceImpl implements JobServiceInterface {
     }
 
     @Override
+    public List<Job> getCompanyJobs(Long id) {
+        return JobDao.findJobByCompanyId(id);
+    }
+
+    @Override
     public void updateJob(Job job) {
         if (job == null || job.getId() == null) {
             return;

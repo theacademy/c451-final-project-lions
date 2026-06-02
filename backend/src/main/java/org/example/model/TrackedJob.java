@@ -9,6 +9,7 @@ public class TrackedJob {
     private int job_id ;
     private String status;
     private String notes;
+
     private Timestamp applied_at;
 
     public int getId() {

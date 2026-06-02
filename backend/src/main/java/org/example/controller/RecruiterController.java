@@ -2,7 +2,6 @@ package org.example.controller;
 
 import org.example.model.User;
 import org.example.service.RecruiterServiceImpl;
-import org.example.service.UserServiceImpl;
 import org.example.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -76,6 +75,29 @@ public class RecruiterController {
 
 
             return ResponseEntity.ok(recruiterService.getUserJobs(jobId));
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid token");
+        }
+
+    }
+
+    @GetMapping("/Companyjob/{id}")
+    public ResponseEntity getCompanyjob(
+            @RequestBody Long CompanyId,
+            @RequestHeader("Authorization") String authHeader)
+    {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Missing or invalid token");
+        }
+
+        try {
+
+
+            return ResponseEntity.ok(recruiterService.getUserJobs(CompanyId));
 
         } catch (Exception e) {
 

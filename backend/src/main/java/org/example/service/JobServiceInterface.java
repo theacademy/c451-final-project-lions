@@ -20,4 +20,6 @@ public interface JobServiceInterface {
 
     List<Job> getBoardJobs(String role, String location, String seniority, int page);
 
+    public List<Job> getCompanyJobs(Long id) ;
+
 }
