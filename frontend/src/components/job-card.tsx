@@ -5,10 +5,10 @@ interface JobInfo {
   alt?: string;
   company: string;
   role: string;
-  YoE: string;
-  location: string;
-  workType: string;
-  salary: string;
+  YoE?: string;
+  location?: string;
+  workType?: string;
+  salary?: string;
   key?: number;
 }
 
@@ -31,12 +31,20 @@ export function JobCard(props: JobInfo) {
           <h3 className="text-md">{props.company}</h3>
           <h2 className="card-title">{props.role}</h2>
           <p>
-            <span className="text-primary">{props.YoE}</span>
-            <br></br>
-            {props.location}-{props.workType}
-            <br></br>
-            {props.salary}
-            <br></br>
+            {props.YoE && (
+              <>
+                <span className="text-primary">{props.YoE}</span>
+                <br />
+              </>
+            )}
+            {props.location}
+            {props.workType ? ` · ${props.workType}` : ""}
+            {props.salary && (
+              <>
+                <br />
+                {props.salary}
+              </>
+            )}
           </p>
         </div>
       </div>
