@@ -70,10 +70,10 @@ export async function getPreferences(): Promise<Preferences | null> {
 export async function getJobMatchForApplicant(
   jobID: number,
   applicantID: number,
-  controller: AbortController,
+  // controller: AbortController,
 ): Promise<ApplicantMatchInfo | null> {
   const res = await fetch(`${BASE_URL}/job/${jobID}/applicant/${applicantID}`, {
-    signal: controller.signal,
+    // signal: controller.signal,
   });
   if (res.status === 204) return null;
   if (!res.ok) throw new Error("Failed to load job");

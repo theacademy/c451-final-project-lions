@@ -19,8 +19,6 @@ export function ApplicantMatchCard(props: {
   const [allTechSkills, setAllTechSkills] = useState<string[]>([]);
   const [matchedSkills, setMatchedSkills] = useState<string[]>([]);
 
-  // TODO: Track job for applicant when clicking on apply
-
   // Backend may send these as a CSV string OR a JSON array (skills_csv is a List<String>).
   const toList = (val?: string | string[] | null): string[] => {
     if (!val) return [];
@@ -36,7 +34,11 @@ export function ApplicantMatchCard(props: {
       if (!props.jobID || !props.applicantID) return;
       setLoading(true);
       setError("");
-      getJobMatchForApplicant(props.jobID, props.applicantID, controller)
+      getJobMatchForApplicant(
+        props.jobID,
+        props.applicantID,
+        // , controller
+      )
         .then((jobInfo) => {
           setMatch(jobInfo?.matchPercent ?? 0);
 
@@ -77,7 +79,7 @@ export function ApplicantMatchCard(props: {
     fetchUserInfo();
 
     return () => controller.abort();
-  }, []);
+  }, [props.jobID, props.applicantID]);
 
   useEffect(() => {
     const findMatchingSkills = async () => {
