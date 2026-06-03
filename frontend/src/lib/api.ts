@@ -115,3 +115,34 @@ export async function getJobById(id: number | string): Promise<JobDetail | null>
   if (!res.ok) throw new Error("Failed to load job");
   return res.json();
 }
+
+export interface UserProfile {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email_address: string;
+  preferences: Preferences | null;
+}
+
+// GET /user/profile — current user's info + preferences (token)
+export async function getProfile(): Promise<UserProfile> {
+  const res = await fetch(`${BASE_URL}/user/profile`, {
+    headers: { ...authHeaders() },
+  });
+  if (!res.ok) throw new Error("Failed to load profile");
+  return res.json();
+}
+
+// PUT /user/profile — update name only (token)
+export async function updateProfileName(name: {
+  first_name: string;
+  last_name: string;
+}): Promise<UserProfile> {
+  const res = await fetch(`${BASE_URL}/user/profile`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+    body: JSON.stringify(name),
+  });
+  if (!res.ok) throw new Error("Failed to update profile");
+  return res.json();
+}
