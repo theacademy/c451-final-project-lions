@@ -28,13 +28,7 @@ export function ApplicantMatchCard(props: {
       getJobMatchForApplicant(props.jobID, props.applicantID)
         .then((jobInfo) => {
           setMatch(jobInfo?.matchPercent ?? 0);
-
-          // Convert string to array
-          const s: string[] = jobInfo?.skillsCsv?.split(",") ?? [];
-
-          s.forEach((element) => {
-            setSkills((skills) => [...skills, element]);
-          });
+          setSkills(jobInfo?.skillsCsv?.split(",") ?? []);
         })
         .catch(() => setError("Couldn't load this job."))
         .finally(() => setLoading(false));
@@ -42,7 +36,7 @@ export function ApplicantMatchCard(props: {
 
     fetchMatch();
     return () => controller.abort();
-  }, []);
+  }, [props.jobID, props.applicantID]);
 
   // Redirect when applying
   const applyToJob = () => {
