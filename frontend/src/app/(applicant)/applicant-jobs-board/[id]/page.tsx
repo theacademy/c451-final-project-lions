@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
-import { getJobById, JobDetail } from "@/src/lib/api";
+import { getJobById, getProfile, JobDetail } from "@/src/lib/api";
 import { ApplicantMatchCard } from "@/src/components/match-card";
 
 const KEY = process.env.NEXT_PUBLIC_LOGO_DEV_PUBLISHABLE_KEY;
@@ -12,8 +12,7 @@ export default function ApplicantJobPage() {
   const params = useParams();
   const jobID = Array.isArray(params.id) ? params.id[0] : params.id;
 
-  // TODO: EDIT
-  const applicantID = 1;
+  const [applicantID, setApplicantID] = useState<number>(0);
 
   const [job, setJob] = useState<JobDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -32,6 +31,13 @@ export default function ApplicantJobPage() {
 
     fetchJob();
   }, [jobID]);
+
+  // Load the logged-in user's id so the match is scored against them.
+  useEffect(() => {
+    getProfile()
+      .then((p) => setApplicantID(p.id))
+      .catch(() => setApplicantID(0));
+  }, []);
 
   if (loading) return <main className="grow p-6">Loading…</main>;
   if (error || !job)
