@@ -18,6 +18,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -145,6 +146,7 @@ public class JobServiceImpl implements JobServiceInterface {
         TrackedJob trackedJob = new TrackedJob();
         trackedJob.setJob_id(jobId);
         trackedJob.setUser_id(userId);
+        trackedJob.setStatus("applied");
 
         String jobSkillsCsv = job.getSkillsCsv();
         String userSkillsCsv = preference.getSkills();
