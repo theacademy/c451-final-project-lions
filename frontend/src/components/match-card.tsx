@@ -66,8 +66,6 @@ export function ApplicantMatchCard(props: {
         setAllTechSkills((allTechSkills) =>
           allTechSkills.map((item) => item.toLowerCase()),
         );
-
-        console.log("my skills: ", allTechSkills);
       } catch (err) {
         setError("Couldn't load your profile.");
       } finally {
@@ -77,7 +75,6 @@ export function ApplicantMatchCard(props: {
 
     fetchMatchPercent();
     fetchUserInfo();
-    console.log(skills, allTechSkills);
 
     return () => controller.abort();
   }, []);
@@ -85,8 +82,6 @@ export function ApplicantMatchCard(props: {
   useEffect(() => {
     const findMatchingSkills = async () => {
       skills.forEach((element) => {
-        console.log(element, allTechSkills.includes(element));
-
         if (allTechSkills.includes(element)) {
           setMatchedSkills((matchedSkills) => [...matchedSkills, element]);
         }
@@ -105,7 +100,6 @@ export function ApplicantMatchCard(props: {
       } catch {
         setError("Something went wrong. Please try again.");
       }
-      console.log("added match to db");
     }
   };
 
