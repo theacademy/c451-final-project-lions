@@ -84,11 +84,11 @@ export default function ApplicantJobBoard() {
 
       {error && <p className="text-error text-sm">{error}</p>}
       {loading ? (
-        <p>Loading…</p>
+        <p className="text-center text-lg">Loading…</p>
       ) : jobs.length === 0 ? (
         <p>No jobs match your filters.</p>
       ) : (
-        <div className="flex flex-wrap justify-center gap-6">
+        <div className="grid grid-cols-3 justify-center gap-6 items-stretch">
           {jobs.map((job) => (
             <Link href={`/applicant-jobs-board/${job.id}`} key={job.id}>
               <JobCard

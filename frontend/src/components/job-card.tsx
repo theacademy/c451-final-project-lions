@@ -18,7 +18,7 @@ const KEY = process.env.NEXT_PUBLIC_LOGO_DEV_PUBLISHABLE_KEY;
 export function JobCard(props: JobInfo) {
   return (
     <>
-      <div className="card bg-base-100 w-96 shadow-sm p-2">
+      <div className="card bg-base-100 h-full shadow-sm p-2">
         <figure className="justify-start p-5">
           <Image
             src={`https://img.logo.dev/${props.domain}?token=${KEY}&fallback=404`}
@@ -33,7 +33,7 @@ export function JobCard(props: JobInfo) {
           <p>
             {props.YoE && (
               <>
-                <span className="text-primary">{props.YoE}</span>
+                <span className="text-primary capitalize">{props.YoE}</span>
                 <br />
               </>
             )}
