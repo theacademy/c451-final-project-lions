@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
   e.preventDefault();
@@ -29,6 +30,7 @@ export default function RecruiterSignUp() {
       console.log("Prevent form submission");
     }
   };
+
   return (
     <main className="flex flex-col grow max-w-3/4 mx-auto p-6 gap-6 justify-center items-center">
       <h1 className="text-2xl font-bold">
@@ -106,9 +108,11 @@ export default function RecruiterSignUp() {
                 id="company"
               />
 
-              <button className="btn btn-neutral" type="submit">
-                Continue
-              </button>
+              <Link href="/recruiter-dashboard">
+                <button className="btn btn-neutral" type="submit">
+                  Continue
+                </button>{" "}
+              </Link>
             </form>
           </div>
         </div>

@@ -23,6 +23,7 @@ export function Header() {
             <li>
               <Link href="/applicant-dashboard">Dashboard</Link>
             </li>
+
             <li>
               <Link href="/" className="btn btn-neutral btn-sm">
                 Log out

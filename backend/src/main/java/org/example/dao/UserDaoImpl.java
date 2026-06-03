@@ -85,6 +85,12 @@ public class UserDaoImpl implements UserDao{
     }
 
     @Override
+    public void updateName(String firstName, String lastName, int id) {
+        String sql = "UPDATE users SET first_name = ?, last_name = ? WHERE id = ?";
+        jdbc.update(sql, firstName, lastName, id);
+    }
+
+    @Override
     public void editPassword(String passwordHash, int id) {
         String sql = "UPDATE users SET password_hash = ? WHERE id = ?";
         jdbc.update(sql, passwordHash, id);

@@ -65,6 +65,11 @@ public class UserServiceImpl implements UserServiceInterface {
     }
 
     @Override
+    public void updateName(String firstName, String lastName, int id) {
+        userDao.updateName(firstName, lastName, id);
+    }
+
+    @Override
     public TrackedJob updateJobstatus(int id, TrackedJob status) {
         if (status == null ) {
             return null;
