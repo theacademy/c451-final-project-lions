@@ -1,6 +1,8 @@
 import { getToken } from "@/src/lib/auth";
+import { ApplicantMatchInfo } from "@/src/types/types";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
+const BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
 
 export interface SignupPayload {
   first_name: string;
@@ -64,6 +66,17 @@ export async function getPreferences(): Promise<Preferences | null> {
   return res.json();
 }
 
+// GET /{jobId}/applicant/{userId} — match for job and use; null when not found (HTTP 204)
+export async function getJobMatchForApplicant(
+  jobID: number,
+  applicantID: number,
+): Promise<ApplicantMatchInfo | null> {
+  const res = await fetch(`${BASE_URL}/job/${jobID}/applicant/${applicantID}`);
+  if (res.status === 204) return null;
+  if (!res.ok) throw new Error("Failed to load job");
+  return res.json();
+}
+
 // POST /user/preferences
 export async function savePreferences(prefs: Preferences): Promise<void> {
   const res = await fetch(`${BASE_URL}/user/preferences`, {
@@ -92,7 +105,9 @@ export interface BoardFilters {
 }
 
 // GET /job/board — active jobs, optional role/location/seniority filters (public)
-export async function getBoardJobs(filters: BoardFilters = {}): Promise<BoardJob[]> {
+export async function getBoardJobs(
+  filters: BoardFilters = {},
+): Promise<BoardJob[]> {
   const q = new URLSearchParams();
   if (filters.role) q.set("role", filters.role);
   if (filters.location) q.set("location", filters.location);
@@ -109,7 +124,9 @@ export interface JobDetail extends BoardJob {
 }
 
 // GET /job/{id} — single job; null when not found (HTTP 204)
-export async function getJobById(id: number | string): Promise<JobDetail | null> {
+export async function getJobById(
+  id: number | string,
+): Promise<JobDetail | null> {
   const res = await fetch(`${BASE_URL}/job/${id}`);
   if (res.status === 204) return null;
   if (!res.ok) throw new Error("Failed to load job");

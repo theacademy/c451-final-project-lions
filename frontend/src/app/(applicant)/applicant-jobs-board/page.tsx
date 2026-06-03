@@ -15,27 +15,31 @@ export default function ApplicantJobBoard() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    let active = true;
-    setLoading(true);
-    setError("");
-    getBoardJobs({
-      role: role || undefined,
-      location: location || undefined,
-      seniority: seniority || undefined,
-      page,
-    })
-      .then((data) => {
-        if (active) setJobs(data);
+    const fetchJobs = async () => {
+      let active = true;
+      setLoading(true);
+      setError("");
+      getBoardJobs({
+        role: role || undefined,
+        location: location || undefined,
+        seniority: seniority || undefined,
+        page,
       })
-      .catch(() => {
-        if (active) setError("Couldn't load jobs. Please try again.");
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-    return () => {
-      active = false;
+        .then((data) => {
+          if (active) setJobs(data);
+        })
+        .catch(() => {
+          if (active) setError("Couldn't load jobs. Please try again.");
+        })
+        .finally(() => {
+          if (active) setLoading(false);
+        });
+      return () => {
+        active = false;
+      };
     };
+
+    fetchJobs();
   }, [role, location, seniority, page]);
 
   return (
@@ -84,11 +88,11 @@ export default function ApplicantJobBoard() {
 
       {error && <p className="text-error text-sm">{error}</p>}
       {loading ? (
-        <p>Loading…</p>
+        <p className="text-center text-lg">Loading…</p>
       ) : jobs.length === 0 ? (
         <p>No jobs match your filters.</p>
       ) : (
-        <div className="flex flex-wrap justify-center gap-6">
+        <div className="grid grid-cols-3 justify-center gap-6 items-stretch">
           {jobs.map((job) => (
             <Link href={`/applicant-jobs-board/${job.id}`} key={job.id}>
               <JobCard

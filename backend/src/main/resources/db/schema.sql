@@ -2,6 +2,8 @@
 -- Database schema for job_tracker
 -- Instructions: open in MySQL Workbench and run the entire file.
 
+-- DROP DATABASE job_tracker;
+
 CREATE DATABASE IF NOT EXISTS job_tracker
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
@@ -74,7 +76,6 @@ CREATE TABLE tracked_jobs (
     status VARCHAR(20) NOT NULL DEFAULT 'wishlist',
     match_score INT,
     notes TEXT,
-    Match_score INT,
     applied_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
