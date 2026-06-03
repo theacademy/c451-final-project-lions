@@ -166,3 +166,18 @@ export async function updateProfileName(name: {
   if (!res.ok) throw new Error("Failed to update profile");
   return res.json();
 }
+
+// POST /user/preferences
+export async function saveMatch(
+  jobID: number,
+  applicantID: number,
+): Promise<void> {
+  const res = await fetch(
+    `${BASE_URL}/job/match/${jobID}/applicant/${applicantID}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...authHeaders() },
+    },
+  );
+  if (!res.ok) throw new Error("Failed to save preferences");
+}

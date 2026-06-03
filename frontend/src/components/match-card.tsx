@@ -1,6 +1,6 @@
 "use client";
 import { ApplicantMatchInfo } from "@/src/types/types";
-import { getProfile, updateProfileName, savePreferences } from "../lib/api";
+import { getProfile, saveMatch } from "../lib/api";
 import CheckIcon from "@/public/check.svg";
 import Image from "next/image";
 import { getJobMatchForApplicant } from "@/src/lib/api";
@@ -96,9 +96,16 @@ export function ApplicantMatchCard(props: {
   }, [skills, allTechSkills]);
 
   // Redirect when applying
-  const applyToJob = () => {
+  const applyToJob = async () => {
     if (props.applyURL != null) {
       // signal to backend
+
+      try {
+        const res = await saveMatch(props.jobID, props.applicantID);
+      } catch {
+        setError("Something went wrong. Please try again.");
+      }
+      console.log("added match to db");
     }
   };
 
@@ -116,7 +123,7 @@ export function ApplicantMatchCard(props: {
             .join(", ")}
         </p>
         <p className="flex-none capitalize text-accent text-pretty">
-          {match < 100 && <span>Missing: </span>}
+          {match < 100 && skills.length > 0 && <span> Missing: </span>}
           {skills
             .filter((item) => !matchedSkills.includes(item))
             .map((word) => word.charAt(0).toUpperCase() + word.slice(1))

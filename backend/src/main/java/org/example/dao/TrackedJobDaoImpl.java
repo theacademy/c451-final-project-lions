@@ -17,14 +17,13 @@ public class TrackedJobDaoImpl implements TrackedJobDao{
 
     @Override
     public TrackedJob createNewTrackedJob(TrackedJob trackedJob) {
-        final String INSERT_TRACKED = "INSERT INTO tracked_jobs(  user_id, job_id, status, notes, applied_at) "
-                + "VALUES(?,?,?,?,?)";
+        final String INSERT_TRACKED = "INSERT INTO tracked_jobs(  user_id, job_id, status, notes) "
+                + "VALUES(?,?,?,?)";
         jdbc.update(INSERT_TRACKED,
                 trackedJob.getUser_id(),
                 trackedJob.getJob_id(),
                 trackedJob.getStatus(),
-                trackedJob.getNotes(),
-                trackedJob.getApplied_at());
+                trackedJob.getNotes());
         int newId = jdbc.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
         trackedJob.setId(newId);
         return trackedJob;
