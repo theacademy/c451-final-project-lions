@@ -4,26 +4,34 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import { getJobById, JobDetail } from "@/src/lib/api";
+import { ApplicantMatchCard } from "@/src/components/match-card";
 
 const KEY = process.env.NEXT_PUBLIC_LOGO_DEV_PUBLISHABLE_KEY;
 
 export default function ApplicantJobPage() {
   const params = useParams();
-  const id = Array.isArray(params.id) ? params.id[0] : params.id;
+  const jobID = Array.isArray(params.id) ? params.id[0] : params.id;
+
+  // TODO: EDIT
+  const applicantID = 1;
 
   const [job, setJob] = useState<JobDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!id) return;
-    setLoading(true);
-    setError("");
-    getJobById(id)
-      .then((j) => setJob(j))
-      .catch(() => setError("Couldn't load this job."))
-      .finally(() => setLoading(false));
-  }, [id]);
+    const fetchJob = async () => {
+      if (!jobID) return;
+      setLoading(true);
+      setError("");
+      getJobById(jobID)
+        .then((j) => setJob(j))
+        .catch(() => setError("Couldn't load this job."))
+        .finally(() => setLoading(false));
+    };
+
+    fetchJob();
+  }, [jobID]);
 
   if (loading) return <main className="grow p-6">Loading…</main>;
   if (error || !job)
@@ -37,7 +45,7 @@ export default function ApplicantJobPage() {
     <main className="flex flex-col grow max-w-3/4 mx-auto p-6 gap-6">
       <div className="card bg-base-100 shadow-sm p-2">
         <div className="card-body p-10">
-          <div className="flex flex-row justify-between gap-6">
+          <div className="flex flex-row justify-between items-center gap-3">
             <div>
               {domain && (
                 <figure className="justify-start p-5">
@@ -62,24 +70,25 @@ export default function ApplicantJobPage() {
               </p>
             </div>
 
-            <div className="card bg-base-100 w-96 shadow-sm p-2 h-fit">
-              <div className="card-body justify-center gap-2 text-center">
-                {job.absoluteUrl ? (
-                  <a
-                    href={job.absoluteUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-primary btn-block"
-                  >
-                    Apply now
-                  </a>
-                ) : (
+            {job.absoluteUrl && jobID ? (
+              <div className="w-96">
+                <ApplicantMatchCard
+                  jobID={parseInt(jobID)}
+                  applicantID={applicantID}
+                  applyButton={true}
+                  applyURL={job.absoluteUrl}
+                />
+              </div>
+            ) : (
+              <div className="card bg-base-100 w-96 shadow-sm p-2 h-fit">
+                <div className="card-body justify-center gap-2 text-center">
+                  {" "}
                   <button className="btn btn-primary btn-block" disabled>
                     Apply now
                   </button>
-                )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {job.descriptionHtml && (

@@ -39,3 +39,10 @@ export interface ApplicantPreferences {
   jobType?: string;
   updated: Date;
 }
+
+export interface ApplicantMatchInfo {
+  applicantID: number;
+  jobID: number;
+  matchPercent: number;
+  skillsCsv?: string;
+}

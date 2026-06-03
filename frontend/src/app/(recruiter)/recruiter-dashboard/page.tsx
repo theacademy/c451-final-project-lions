@@ -27,7 +27,7 @@ export default function RecruiterDashboard() {
   return (
     <main className="flex flex-col grow mx-auto p-6 gap-6">
       {placeholders.map((item) => (
-        <Link href={`/recruiter-dashboard/job-${item.jobID}`} key={item.jobID}>
+        <Link href={`/recruiter-dashboard/${item.jobID}`} key={item.jobID}>
           <RecruiterJobPost {...item} />
         </Link>
       ))}

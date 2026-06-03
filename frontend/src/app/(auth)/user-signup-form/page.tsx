@@ -1,9 +1,8 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";          // replace the `redirect` import
+import { useRouter } from "next/navigation"; // replace the `redirect` import
 import { signup, login, savePreferences } from "@/src/lib/api";
 import { setToken } from "@/src/lib/auth";
-
 
 interface technicalSkill {
   tskill: string;
@@ -30,7 +29,6 @@ export default function UserSignUp() {
   // desired role
   const [desiredRole, setDesiredRole] = useState("");
 
-
   const [locationCount, setLocationCount] = useState(0);
   const [location, setLocation] = useState("");
   const [allLocations, setAllLocations] = useState<locationType[]>([]);
@@ -44,52 +42,52 @@ export default function UserSignUp() {
   const [submitting, setSubmitting] = useState(false);
 
   // Send data to database
-const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-  const formData = new FormData(e.currentTarget);
-  const skillsCsv = allTechSkills.map((s) => s.tskill).join(",");
-  const locations = allLocations.map((l) => l.loc).join(",");
-  const workType = formData.getAll("work-type").join(",");
+    const formData = new FormData(e.currentTarget);
+    const skillsCsv = allTechSkills.map((s) => s.tskill).join(",");
+    const locations = allLocations.map((l) => l.loc).join(",");
+    const workType = formData.getAll("work-type").join(",");
 
-  setError("");
-  setSubmitting(true);
-  try {
-    const created = await signup({
-      first_name: firstName,
-      last_name: lastName,
-      email_address: email,
-      password,
-    });
-    if (created === null) {
-      setError("That email is already registered.");
-      return;
+    setError("");
+    setSubmitting(true);
+    try {
+      const created = await signup({
+        first_name: firstName,
+        last_name: lastName,
+        email_address: email,
+        password,
+      });
+      if (created === null) {
+        setError("That email is already registered.");
+        return;
+      }
+
+      const token = await login({ email_address: email, password });
+      if (!token) {
+        setError("Account created, but sign-in failed — please log in.");
+        router.push("/login");
+        return;
+      }
+      setToken(token);
+
+      await savePreferences({
+        skills_csv: skillsCsv,
+        desired_location: locations,
+        desired_role: desiredRole || undefined,
+        remote_preference: workType,
+        years_experience: yearsExperience ? Number(yearsExperience) : 0,
+        job_type: jobType || undefined,
+      });
+
+      router.push("/applicant-jobs-board");
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
-
-    const token = await login({ email_address: email, password });
-    if (!token) {
-      setError("Account created, but sign-in failed — please log in.");
-      router.push("/login");
-      return;
-    }
-    setToken(token);
-
-    await savePreferences({
-      skills_csv: skillsCsv,
-      desired_location: locations,
-      desired_role: desiredRole || undefined,
-      remote_preference: workType,
-      years_experience: yearsExperience ? Number(yearsExperience) : 0,
-      job_type: jobType || undefined,
-    });
-
-    router.push("/applicant-jobs-board");
-  } catch {
-    setError("Something went wrong. Please try again.");
-  } finally {
-    setSubmitting(false);
-  }
-};
+  };
 
   const addTechSkill = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
@@ -106,7 +104,6 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       }
     }
   };
-
 
   const addLocation = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
@@ -147,9 +144,9 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   };
 
   return (
-    <>
-      <h1 className="text-4xl font-bold">Join us today</h1>
-      <div className="flex flex-col items-center justify-center">
+    <main className="flex flex-col grow max-w-3/4 mx-auto p-6 gap-6 justify-center items-center">
+      <h1 className="text-3xl font-bold">Join us today</h1>
+      <div className="flex items-center justify-center">
         <div className="card w-96 bg-base-100 card-md shadow-sm">
           <div className="card-body">
             <form
@@ -214,9 +211,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
               />
               {error && <p className="text-error text-sm mt-2">{error}</p>}
 
-              <label htmlFor="desired-role">
-                Desired role
-              </label>
+              <label htmlFor="desired-role">Desired role</label>
               <input
                 type="text"
                 placeholder="e.g. Frontend Engineer"

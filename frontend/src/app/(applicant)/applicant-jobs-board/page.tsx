@@ -15,27 +15,31 @@ export default function ApplicantJobBoard() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    let active = true;
-    setLoading(true);
-    setError("");
-    getBoardJobs({
-      role: role || undefined,
-      location: location || undefined,
-      seniority: seniority || undefined,
-      page,
-    })
-      .then((data) => {
-        if (active) setJobs(data);
+    const fetchJobs = async () => {
+      let active = true;
+      setLoading(true);
+      setError("");
+      getBoardJobs({
+        role: role || undefined,
+        location: location || undefined,
+        seniority: seniority || undefined,
+        page,
       })
-      .catch(() => {
-        if (active) setError("Couldn't load jobs. Please try again.");
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-    return () => {
-      active = false;
+        .then((data) => {
+          if (active) setJobs(data);
+        })
+        .catch(() => {
+          if (active) setError("Couldn't load jobs. Please try again.");
+        })
+        .finally(() => {
+          if (active) setLoading(false);
+        });
+      return () => {
+        active = false;
+      };
     };
+
+    fetchJobs();
   }, [role, location, seniority, page]);
 
   return (

@@ -1,4 +1,6 @@
+"use client";
 import { ApplicantProfileCard } from "@/src/components/applicant-profile-card";
+import { useParams } from "next/navigation";
 
 interface ApplicantInfo {
   firstName: string;
@@ -80,10 +82,17 @@ const placeholders: ApplicantInfo[] = [
 
 export default function RecruiterApplicants() {
   // TODO: Get from the database the applicants related to the job ID
+  const params = useParams();
+  const jobID: number = Number(params.jobID!);
+
   return (
     <main className="flex flex-col grow max-w-3/4 mx-auto p-6 gap-6">
       {placeholders.map((item) => (
-        <ApplicantProfileCard {...item} key={`applicant-${item.userID}`} />
+        <ApplicantProfileCard
+          {...item}
+          key={`applicant-${item.userID}`}
+          jobID={jobID}
+        />
       ))}
     </main>
   );
