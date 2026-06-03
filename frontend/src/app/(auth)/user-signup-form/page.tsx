@@ -128,7 +128,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   const checkKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
     if (e.key === "Enter" && e.currentTarget.tagName !== "TEXTAREA") {
       e.preventDefault();
-      console.log("prevent form submission");
+      console.log("Prevent form submission");
     }
   };
 
@@ -166,6 +166,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                 placeholder="Type here"
                 className="input"
                 id="firstName"
+                name="firstName"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 required
@@ -179,6 +180,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                 placeholder="Type here"
                 className="input"
                 id="lastName"
+                name="lastName"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 required
@@ -192,6 +194,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                 placeholder="Type here"
                 className="input"
                 id="email"
+                name="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -204,6 +207,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                 placeholder="Type here"
                 className="input"
                 id="password"
+                name="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -254,7 +258,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
               <label htmlFor="locations">
                 Preferred location(s) <span className="text-primary">*</span>
               </label>
-              <div className="flex gap-3 flex-wrap">
+              <div className="flex gap-1 flex-wrap">
                 {allLocations.map((item) => (
                   <span key={item.key} className="border rounded-2xl p-2 px-4">
                     {item.loc}
@@ -305,38 +309,42 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
               </select>
 
               <fieldset>
-                <legend className="fieldset-legend">
+                {/* <legend className="fieldset-legend">
                   Preferred work style <span className="text-primary">*</span>
-                </legend>
-                <label className="label">
-                  <input
-                    type="checkbox"
-                    className="checkbox"
-                    name="work-type"
-                    value="in-person"
-                  />
-                  In-person
-                </label>
-
-                <label className="label">
-                  <input
-                    type="checkbox"
-                    className="checkbox"
-                    name="work-type"
-                    value="remote"
-                  />
-                  Remote
-                </label>
-
-                <label className="label">
-                  <input
-                    type="checkbox"
-                    className="checkbox"
-                    name="work-type"
-                    value="hybrid"
-                  />
-                  Hybrid
-                </label>
+                </legend> */}
+                <div className="flex flex-col gap-3">
+                  <label htmlFor="work-type">
+                    Preferred work style(s)
+                    <span className="text-primary">*</span>
+                  </label>{" "}
+                  <label className="label">
+                    <input
+                      type="checkbox"
+                      className="checkbox"
+                      name="work-type"
+                      value="in-person"
+                    />
+                    In-person
+                  </label>
+                  <label className="label">
+                    <input
+                      type="checkbox"
+                      className="checkbox"
+                      name="work-type"
+                      value="remote"
+                    />
+                    Remote
+                  </label>
+                  <label className="label">
+                    <input
+                      type="checkbox"
+                      className="checkbox"
+                      name="work-type"
+                      value="hybrid"
+                    />
+                    Hybrid
+                  </label>
+                </div>
               </fieldset>
 
               <button
@@ -350,6 +358,6 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           </div>
         </div>
       </div>
-    </>
+    </main>
   );
 }

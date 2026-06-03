@@ -5,11 +5,12 @@ interface ApplicantInfo {
   match: number;
   skills: string[];
   userID: number;
+  email: string;
 }
 
 export function ApplicantProfileCard(props: ApplicantInfo) {
   return (
-    <div className="card bg-base-100 w-96 shadow-sm p-2">
+    <div className="card bg-base-100 shadow-sm p-2 grow">
       <div className="card-body">
         <h2 className="card-title">
           {props.firstName} {props.lastName}
@@ -20,7 +21,9 @@ export function ApplicantProfileCard(props: ApplicantInfo) {
           </p>
         ))}
 
-        <button className="btn btn-primary btn-block">Reach out</button>
+        <a href={`mailto:${props.email}`}>
+          <button className="btn btn-primary btn-block">Reach out</button>
+        </a>
       </div>
     </div>
   );
