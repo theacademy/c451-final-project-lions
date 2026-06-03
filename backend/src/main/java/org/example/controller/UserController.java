@@ -1,9 +1,7 @@
 package org.example.controller;
 
-import org.example.model.Job;
-import org.example.model.TrackedJob;
-import org.example.model.User;
-import org.example.model.UserPreference;
+import org.example.model.*;
+import org.example.service.PreferenceServiceInterface;
 import org.example.service.UserServiceImpl;
 import org.example.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +20,9 @@ public class UserController {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private PreferenceServiceInterface preferenceService;
 
     @GetMapping("/user")
     public ResponseEntity getUserByEmail (@RequestBody String email){
@@ -236,6 +237,62 @@ public class UserController {
     }
 
 
+    // GET /user/profile — current user's info + preferences (from the JWT). For the profile page.
+    @GetMapping("/profile")
+    public ResponseEntity<?> getProfile(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing or invalid token");
+        }
+        try {
+            String email = jwtUtil.extractUsername(authHeader.substring(7));
+            User user = userService.findUserByEmail(email);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+            }
+            UserProfile profile = new UserProfile();
+            profile.setId(user.getId());
+            profile.setFirst_name(user.getFirst_name());
+            profile.setLast_name(user.getLast_name());
+            profile.setEmail_address(user.getEmail_address());
+            profile.setPreferences(preferenceService.getPreferencesByUserId(user.getId()));
+            return ResponseEntity.ok(profile);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+        }
+    }
+
+    // PUT /user/profile — update the authenticated user's name (email is not editable).
+    @PutMapping("/profile")
+    public ResponseEntity<?> updateProfile(@RequestBody User body,
+                                           @RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing or invalid token");
+        }
+        try {
+            String email = jwtUtil.extractUsername(authHeader.substring(7));
+            User user = userService.findUserByEmail(email);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+            }
+            if (body.getFirst_name() == null || body.getFirst_name().isBlank()
+                    || body.getLast_name() == null || body.getLast_name().isBlank()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("First and last name are required");
+            }
+            String first = body.getFirst_name().trim();
+            String last = body.getLast_name().trim();
+            userService.updateName(first, last, user.getId());
+
+            UserProfile profile = new UserProfile();
+            profile.setId(user.getId());
+            profile.setFirst_name(first);
+            profile.setLast_name(last);
+            profile.setEmail_address(user.getEmail_address());
+            profile.setPreferences(preferenceService.getPreferencesByUserId(user.getId()));
+            return ResponseEntity.ok(profile);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+        }
+    }
 
 
 

@@ -17,6 +17,8 @@ public interface UserServiceInterface {
 
     User editUser(User user);
 
+    void updateName(String firstName, String lastName, int id);
+
     void editPassword(String password, int id);
 
     void deleteUser(int id);

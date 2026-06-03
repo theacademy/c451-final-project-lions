@@ -16,6 +16,8 @@ public interface UserDao {
 
     User editUser(User user);
 
+    void updateName(String firstName, String lastName, int id);
+
     void editPassword(String passwordHash, int id);
 
     void deleteUser(int id);
