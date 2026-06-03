@@ -3,6 +3,7 @@ package org.example.controller;
 import org.example.dao.UserPreferenceDaoImpl;
 import org.example.model.Job;
 import org.example.model.Search;
+import org.example.model.TrackedJob;
 import org.example.model.UserPreference;
 import org.example.service.JobServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,6 +81,19 @@ public class JobController {
         return ResponseEntity.ok(jobs);
     }
 
+    @PostMapping("/search/{id}")
+    public ResponseEntity<List<Job>> searchUserJobs(@PathVariable int id,@RequestBody Search search ) {
+        if (search == null || search.getCompanyId() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+        List<Job> jobs = jobService.searchorder(search,id);
+        if (jobs == null) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+        return ResponseEntity.ok(jobs);
+    }
+
+
     @PostMapping("/search/user/{userId}")
     public ResponseEntity<?> searchJobsByUserPreference(@PathVariable int userId,
                                                         @RequestBody Search search) {
@@ -103,5 +117,48 @@ public class JobController {
             return ResponseEntity.ok(Collections.emptyList());
         }
         return ResponseEntity.ok(jobs);
+    }
+
+    @PostMapping("/match/{jobId}/applicant/{userId}")
+    public ResponseEntity<?> addJobMatch(@PathVariable int jobId,
+                                                  @PathVariable int userId) {
+        TrackedJob job = jobService.addJobMatch(jobId, userId);
+        if (job == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Job or applicant not found");
+        }
+        return ResponseEntity.ok(job);
+    }
+
+    @GetMapping("/{jobId}/applicant/{userId}")
+    public ResponseEntity<?> getJobApplicantMatch(@PathVariable int jobId,
+                                                  @PathVariable int userId) {
+        Job job = jobService.getJobApplicantMatch(jobId, userId);
+        if (job == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Job or applicant not found");
+        }
+        return ResponseEntity.ok(job);
+    }
+
+    @GetMapping("/Companyjob/{id}")
+    public ResponseEntity getCompanyjob(
+            @RequestBody Long CompanyId,
+            @RequestHeader("Authorization") String authHeader)
+    {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Missing or invalid token");
+        }
+
+        try {
+
+
+            return ResponseEntity.ok(jobService.getCompanyJobs(CompanyId));
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid token");
+        }
+
     }
 }

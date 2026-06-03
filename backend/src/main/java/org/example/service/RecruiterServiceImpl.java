@@ -1,9 +1,8 @@
 package org.example.service;
 
-import org.example.dao.RecruiterDao;
-import org.example.dao.RecruiterDaoImpl;
-import org.example.dao.TrackedJobDaoImpl;
-import org.example.dao.UserDao;
+import org.example.dao.*;
+import org.example.dao.JobDaoImpl;
+import org.example.model.Job;
 import org.example.model.Recrutiter;
 import org.example.model.TrackedJob;
 import org.example.model.User;
@@ -25,10 +24,14 @@ public class RecruiterServiceImpl implements RecruiterServiceInterface {
     private RecruiterDaoImpl recruiterDao;
     @Autowired
     private TrackedJobDaoImpl trackedJobDao;
+    @Autowired
+    private JobDaoImpl jobDao;
+
+
 
     @Override
-    public User findRecruiterById(int id) {
-        return null;
+    public Recrutiter findRecruiterById(int id) {
+        return recruiterDao.findRecrutiterById(id);
     }
 
 
@@ -45,6 +48,11 @@ public class RecruiterServiceImpl implements RecruiterServiceInterface {
     @Override
     public List<TrackedJob> getUserJobs(Long id) {
         return trackedJobDao.findTrackedJobByjobId(id);
+    }
+
+    @Override
+    public List<Job> getCompanyJobs(Long id) {
+        return jobDao.findJobByCompanyId(id);
     }
 
     @Override

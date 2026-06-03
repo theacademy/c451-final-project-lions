@@ -9,6 +9,17 @@ public class TrackedJob {
     private int job_id ;
     private String status;
     private String notes;
+
+    public int getMatchedPercent() {
+        return matchedPercent;
+    }
+
+    public void setMatchedPercent(int matchedPercent) {
+        this.matchedPercent = matchedPercent;
+    }
+
+    private int matchedPercent ;
+
     private Timestamp applied_at;
 
     public int getId() {

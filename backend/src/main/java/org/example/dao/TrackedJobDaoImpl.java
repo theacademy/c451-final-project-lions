@@ -51,6 +51,17 @@ public class TrackedJobDaoImpl implements TrackedJobDao{
     }
 
     @Override
+    public List<TrackedJob> findTrackedJobByuseId(Long id) {
+        try {
+            final String SELECT_TRACKED_BY_ID = "SELECT * FROM tracked_jobs WHERE user_id = ?";
+            return jdbc.query(SELECT_TRACKED_BY_ID, new trackedJobsMapper(), id);
+        } catch(DataAccessException ex) {
+            return null;
+        }
+    }
+
+
+    @Override
     public void updateTrackedJob(TrackedJob trackedJob) {
         final String UPDATE_TRACKED = "UPDATE tracked_jobs SET user_id = ?, job_id = ?, status = ?, notes = ?, applied_at = ?  "
                 + "WHERE id = ?";

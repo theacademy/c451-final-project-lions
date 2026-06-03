@@ -2,6 +2,7 @@ package org.example.dao;
 
 import org.example.model.Job;
 import org.example.model.Search;
+import org.example.model.TrackedJob;
 
 import java.util.List;
 
@@ -19,5 +20,7 @@ public interface JobDao {
     public List<Job> getAllJobs(int page);
 
     List<Job> findActiveJobs(String role, String location, String seniority, int page);
+
+    public List<Job> findJobByCompanyId(Long id);
 
 }

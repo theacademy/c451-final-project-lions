@@ -2,6 +2,7 @@ package org.example.service;
 
 import org.example.model.Job;
 import org.example.model.Search;
+import org.example.model.TrackedJob;
 
 import java.util.List;
 
@@ -20,4 +21,11 @@ public interface JobServiceInterface {
 
     List<Job> getBoardJobs(String role, String location, String seniority, int page);
 
+    Job getJobApplicantMatch(int jobId, int userId);
+
+    public List<Job> getCompanyJobs(Long id) ;
+
+    public TrackedJob addJobMatch(int jobId, int userId);
+
+    List<Job> searchorder(Search search, int userId);
 }

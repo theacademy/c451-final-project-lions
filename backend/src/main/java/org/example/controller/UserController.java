@@ -228,6 +228,29 @@ public class UserController {
         //YOUR CODE ENDS HERE
     }
 
+    @GetMapping("/Userjob/{id}")
+    public ResponseEntity getUserjob(
+            @RequestBody Long userId,
+            @RequestHeader("Authorization") String authHeader)
+    {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Missing or invalid token");
+        }
+
+        try {
+
+
+            return ResponseEntity.ok(userService.getUserJobs(userId));
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid token");
+        }
+
+    }
+
     @DeleteMapping("/{id}/job")
     public void deleteUserJob(@PathVariable int id, @RequestBody Job job) {
         //YOUR CODE STARTS HERE
