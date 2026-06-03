@@ -74,7 +74,7 @@ export function ApplicantMatchCard(props: {
           >
             <button className="btn btn-primary btn-block" onClick={applyToJob}>
               Apply now
-            </button>{" "}
+            </button>
           </a>
         )}
       </div>
