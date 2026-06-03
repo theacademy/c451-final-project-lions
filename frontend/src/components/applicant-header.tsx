@@ -1,9 +1,11 @@
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import Logo from "@/public/lion-logo.png";
 import "@/src/app/(main)/global.css";
 
 export function Header() {
+  const isDisabled = true;
   return (
     <>
       <div className="navbar bg-base-100 shadow-sm">
@@ -18,7 +20,23 @@ export function Header() {
               <Link href="/applicant-jobs-board">Jobs Board</Link>
             </li>
             <li>
-              <Link href="/applicant-recommended">Recommended</Link>
+              <div className="tooltip tooltip-bottom">
+                <div className="tooltip-content">
+                  <div className="animate-bounce text-primary text-xl font-black">
+                    Coming soon!
+                  </div>
+                </div>
+                <Link
+                  href="/applicant-recommended"
+                  onClick={(e) => {
+                    if (isDisabled) {
+                      e.preventDefault();
+                    }
+                  }}
+                >
+                  Recommended
+                </Link>
+              </div>
             </li>
             <li>
               <Link href="/applicant-dashboard">Dashboard</Link>
